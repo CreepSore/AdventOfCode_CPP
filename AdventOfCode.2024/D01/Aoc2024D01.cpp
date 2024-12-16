@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
+#include <vector>
 
 
 Aoc2024D01::Aoc2024D01()

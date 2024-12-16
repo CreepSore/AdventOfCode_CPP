@@ -1,5 +1,5 @@
 #pragma once
-#include "../AdventOfCode.Shared/IAocDay.h"
+#include "../../AdventOfCode.Shared/IAocDay.h"
 
 class Aoc2024D01 : public IAocDay
 {

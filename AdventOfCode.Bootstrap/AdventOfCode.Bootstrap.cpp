@@ -1,4 +1,4 @@
-#include "../AdventOfCode.2024/Aoc2024D01.h"
+#include "../AdventOfCode.2024/D01/Aoc2024D01.h"
 #include "../AdventOfCode.Shared/AocRegistry.h"
 
 int main()
