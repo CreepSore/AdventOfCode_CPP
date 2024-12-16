@@ -3,6 +3,10 @@
 
 class Aoc2024D01 : public IAocDay
 {
+private:
+    AocDayPartResult runPart1() const;
+    AocDayPartResult runPart2() const;
+
 public:
     Aoc2024D01();
     ~Aoc2024D01() override;
