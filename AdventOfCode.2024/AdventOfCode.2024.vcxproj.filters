@@ -24,12 +24,30 @@
     <ClInclude Include="D01\Aoc2024D01.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="D02\Aoc2024D02.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="D03\Aoc2024D03.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="D03\Lexer.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="D01\Aoc2024D01.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="D02\Aoc2024D02.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="D03\Aoc2024D03.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="D03\Lexer.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

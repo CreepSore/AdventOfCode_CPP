@@ -86,42 +86,10 @@ void AocRegistry::run() const
 
             std::string runtime;
             int type = 1;
-            auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - begin).count();
-
-            if(time > 1000)
-            {
-                time = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
-                type = 2;
-
-                if(time > 1000)
-                {
-                    time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count();
-                    type = 3;
-                }
-            }
-
-            runtime = std::to_string(time);
-
-            switch(type)
-            {
-            case 1:
-                runtime.append(" ns");
-                break;
-
-            case 2:
-                runtime.append(" us");
-                break;
-
-            case 3:
-                runtime.append(" ms");
-                break;
-
-            default:
-                break;
-            }
+            auto time = std::chrono::steady_clock::now() - begin;
 
             std::cout
-                << runtime
+                << AocRegistry::durationToString(time)
                 << '\n';
         }
 
@@ -131,4 +99,137 @@ void AocRegistry::run() const
     }
 }
 
+void AocRegistry::runBenchmark() const
+{
+    std::vector<int> benchmarks;
+    benchmarks.push_back(10);
+    benchmarks.push_back(100);
+    benchmarks.push_back(1000);
+    benchmarks.push_back(10000);
+    benchmarks.push_back(100000);
+
+    size_t spacing = 0;
+
+    for (const int value : benchmarks)
+    {
+        size_t size = std::to_string(value).length();
+        if(size > spacing)
+        {
+            spacing = size;
+        }
+    }
+
+    for (const auto day : this->days)
+    {
+        auto sDay = std::to_string(day->getDay());
+
+        if (sDay.length() == 1)
+        {
+            sDay.insert(0, "0");
+        }
+
+        std::cout
+            << "Running ["
+            << std::to_string(day->getYear())
+            << "/"
+            << sDay
+            << "]:\n";
+
+        std::vector<AocDayPartResult> results;
+        const std::string* data = this->loadData(day->getYear(), day->getDay());
+
+        if (data == nullptr)
+        {
+            std::cout << "    No datafile found" << "\n\n";
+            continue;
+        }
+
+        day->initialize(*data);
+
+        for (int i = 1; i <= day->getPartCount(); i++)
+        {
+            std::cout
+                << "    Part "
+                << std::to_string(i)
+                << ":\n";
+
+
+            for (int benchmark : benchmarks)
+            {
+                std::chrono::steady_clock::duration min {-1};
+                std::chrono::steady_clock::duration max {-1};
+                std::chrono::steady_clock::duration avg {-1};
+
+                for(int j = 0; j < benchmark; j++)
+                {
+                    results.clear();
+                    auto begin = std::chrono::steady_clock::now();
+
+                    day->run(results, i);
+
+                    auto timeDelta = std::chrono::steady_clock::now() - begin;
+
+                    if(timeDelta < min || min.count() == -1)
+                    {
+                        min = timeDelta;
+                    }
+
+                    if(timeDelta > max || max.count() == -1)
+                    {
+                        max = timeDelta;
+                    }
+
+                    avg += timeDelta;
+                }
+
+                avg /= benchmark;
+
+                
+
+                std::cout
+                    << std::setw(spacing + 8)
+                    << std::to_string(benchmark)
+                    << "x = "
+                    << std::setw(8)
+                    << AocRegistry::durationToString(min)
+                    << " MIN   "
+                    << std::setw(8)
+                    << AocRegistry::durationToString(max)
+                    << " MAX   "
+                    << std::setw(8)
+                    << AocRegistry::durationToString(avg)
+                    << " AVG\n";
+            }
+        }
+
+        std::cout << '\n';
+
+        delete data;
+    }
+}
+
+std::string AocRegistry::durationToString(const std::chrono::steady_clock::duration duration)
+{
+    const char* runtimeStamps[] = {" ns", " us", " ms"};
+
+    int type = 0;
+    unsigned long long runtime = duration.count();
+
+    if (runtime >= 100000)
+    {
+        runtime = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+        type = 1;
+
+        if (runtime >= 100000)
+        {
+            runtime = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+            type = 2;
+        }
+    }
+
+    std::string result = std::to_string(runtime);
+    result.append(runtimeStamps[type]);
+
+    return result;
+}
 
