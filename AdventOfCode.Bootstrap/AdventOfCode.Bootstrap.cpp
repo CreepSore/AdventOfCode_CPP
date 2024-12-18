@@ -4,6 +4,7 @@
 #include "../AdventOfCode.2024/D02/Aoc2024D02.h"
 #include "../AdventOfCode.2024/D03/Aoc2024D03.h"
 #include "../AdventOfCode.2024/D04/Aoc2024D04.h"
+#include "../AdventOfCode.2024/D05/Aoc2024D05.h"
 #include "../AdventOfCode.Shared/AocRegistry.h"
 
 struct MenuResult
@@ -132,7 +133,8 @@ int main(int argc, char* argv[])
         new Aoc2024D01(),
         new Aoc2024D02(),
         new Aoc2024D03(),
-        new Aoc2024D04()
+        new Aoc2024D04(),
+        new Aoc2024D05(),
     };
 
     AocRegistry registry = AocRegistry(std::string(basedir));
