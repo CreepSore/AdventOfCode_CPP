@@ -105,8 +105,6 @@ void AocRegistry::runBenchmark() const
     benchmarks.push_back(10);
     benchmarks.push_back(100);
     benchmarks.push_back(1000);
-    benchmarks.push_back(10000);
-    benchmarks.push_back(100000);
 
     size_t spacing = 0;
 
