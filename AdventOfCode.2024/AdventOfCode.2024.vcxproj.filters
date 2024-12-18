@@ -33,6 +33,15 @@
     <ClInclude Include="D03\Lexer.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="D04\Aoc2024D04.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="D04\Grid.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="D04\Vec2.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -48,6 +57,15 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="D03\Lexer.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="D04\Aoc2024D04.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="D04\Grid.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="D04\Vec2.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
