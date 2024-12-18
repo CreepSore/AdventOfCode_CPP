@@ -43,19 +43,16 @@ MenuResult showMenu()
         }
     } while (year == -1);
 
-    do
+    std::cout << "\nHello plsplsplspls input Day:\n> ";
+    try
     {
-        std::cout << "\nHello plsplsplspls input Day:\n> ";
-        try
-        {
-            std::getline(std::cin, result);
-            day = std::stoi(result);
-        }
-        catch (...)
-        {
-            std::cout << "PLS RETRY\n";
-        }
-    } while (day == -1);
+        std::getline(std::cin, result);
+        day = std::stoi(result);
+    }
+    catch(...)
+    {
+        day = -1;
+    }
 
     return {year, day};
 }

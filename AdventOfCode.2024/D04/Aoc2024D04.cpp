@@ -361,7 +361,7 @@ void Aoc2024D04::run(std::vector<AocDayPartResult>& resultList, int part)
     {
     case -1:
         resultList.push_back(runPart1());
-        resultList.push_back(runPart2Multithreaded());
+        resultList.push_back(runPart2());
         break;
 
     case 1:
@@ -369,7 +369,7 @@ void Aoc2024D04::run(std::vector<AocDayPartResult>& resultList, int part)
         break;
 
     case 2:
-        resultList.push_back(runPart2Multithreaded());
+        resultList.push_back(runPart2());
         break;
 
     default:
