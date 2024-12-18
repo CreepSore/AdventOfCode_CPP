@@ -18,6 +18,7 @@ struct Vec2
     /// </summary>
     /// <returns></returns>
     static Vec2 add(const Vec2& obj0, const Vec2& obj1);
+    static bool equals(const Vec2& obj0, const Vec2& obj1);
 
     static Vec2 VEC_UP;
     static Vec2 VEC_UP_RIGHT;

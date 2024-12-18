@@ -16,11 +16,11 @@ struct GridNode
 class Grid
 {
 private:
-    std::map<uint16_t, GridNode*> nodes;
     uint8_t width = 0;
     uint8_t height = 0;
 
 public:
+    std::map<uint16_t, GridNode*> nodes;
     ~Grid();
 
     void addNode(GridNode* node);

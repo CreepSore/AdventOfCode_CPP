@@ -36,13 +36,16 @@
     <ClInclude Include="D04\Aoc2024D04.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="D04\Grid.h">
+    <ClInclude Include="Shared\Grid.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="D04\Vec2.h">
+    <ClInclude Include="Shared\Vec2.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="D05\Aoc2024D05.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="D06\Aoc2024D06.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,13 +68,16 @@
     <ClCompile Include="D04\Aoc2024D04.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="D04\Grid.cpp">
+    <ClCompile Include="Shared\Grid.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="D04\Vec2.cpp">
+    <ClCompile Include="Shared\Vec2.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="D05\Aoc2024D05.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="D06\Aoc2024D06.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

@@ -212,9 +212,10 @@
     <ClInclude Include="D02\Aoc2024D02.h" />
     <ClInclude Include="D03\Aoc2024D03.h" />
     <ClInclude Include="D03\Lexer.h" />
-    <ClInclude Include="D04\Grid.h" />
+    <ClInclude Include="D06\Aoc2024D06.h" />
+    <ClInclude Include="Shared\Grid.h" />
     <ClInclude Include="D04\Aoc2024D04.h" />
-    <ClInclude Include="D04\Vec2.h" />
+    <ClInclude Include="Shared\Vec2.h" />
     <ClInclude Include="D05\Aoc2024D05.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
@@ -225,8 +226,9 @@
     <ClCompile Include="D03\Aoc2024D03.cpp" />
     <ClCompile Include="D03\Lexer.cpp" />
     <ClCompile Include="D04\Aoc2024D04.cpp" />
-    <ClCompile Include="D04\Grid.cpp" />
-    <ClCompile Include="D04\Vec2.cpp" />
+    <ClCompile Include="D06\Aoc2024D06.cpp" />
+    <ClCompile Include="Shared\Grid.cpp" />
+    <ClCompile Include="Shared\Vec2.cpp" />
     <ClCompile Include="D05\Aoc2024D05.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

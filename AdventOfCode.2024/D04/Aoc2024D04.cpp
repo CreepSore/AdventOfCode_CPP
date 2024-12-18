@@ -4,7 +4,7 @@
 #include <iostream>
 #include <thread>
 
-#include "Grid.h"
+#include "../Shared/Grid.h"
 
 Aoc2024D04::Aoc2024D04()
 {

@@ -30,6 +30,12 @@ Vec2 Vec2::add(const Vec2& obj0, const Vec2& obj1)
     return {static_cast<uint8_t>(obj0.x + obj1.x), static_cast<uint8_t>(obj0.y + obj1.y)};
 }
 
+bool Vec2::equals(const Vec2& obj0, const Vec2& obj1)
+{
+    return obj0.x == obj1.x
+        && obj0.y == obj1.y;
+}
+
 std::ostream& operator<<(std::ostream& stream, const Vec2& vec)
 {
     stream << "Vec2[" << std::to_string(vec.x) << "," << std::to_string(vec.y) << "]";
