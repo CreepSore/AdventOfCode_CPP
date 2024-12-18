@@ -36,11 +36,42 @@ std::ostream& operator<<(std::ostream& stream, const Vec2& vec)
     return stream;
 }
 
+/// <summary>
+/// Vec2[0, -1]
+/// </summary>
 Vec2 Vec2::VEC_UP = Vec2(0, -1);
+
+/// <summary>
+/// Vec2[1, -1]
+/// </summary>
 Vec2 Vec2::VEC_UP_RIGHT = Vec2(1, -1);
+
+/// <summary>
+/// Vec2[1, 0]
+/// </summary>
 Vec2 Vec2::VEC_RIGHT = Vec2(1, 0);
+
+/// <summary>
+/// Vec2[1, 1]
+/// </summary>
 Vec2 Vec2::VEC_DOWN_RIGHT = Vec2(1, 1);
+
+/// <summary>
+/// Vec2[0, 1]
+/// </summary>
 Vec2 Vec2::VEC_DOWN = Vec2(0, 1);
+
+/// <summary>
+/// Vec2[-1, 1]
+/// </summary>
 Vec2 Vec2::VEC_DOWN_LEFT = Vec2(-1, 1);
+
+/// <summary>
+/// Vec2[-1, 0]
+/// </summary>
 Vec2 Vec2::VEC_LEFT = Vec2(-1, 0);
+
+/// <summary>
+/// Vec2[-1, -1]
+/// </summary>
 Vec2 Vec2::VEC_UP_LEFT = Vec2(-1, -1);

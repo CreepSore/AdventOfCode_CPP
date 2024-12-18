@@ -184,7 +184,64 @@ AocDayPartResult Aoc2024D04::runPart1() const
 
 AocDayPartResult Aoc2024D04::runPart2() const
 {
+    const std::string toFind = "MAS";
+    Grid grid = Grid::fromString(*this->data);
+    const auto height = grid.getHeight();
+    const auto width = grid.getWidth();
+
     int result = 0;
+
+    const auto checkNode = [](Grid& grid, GridNode* node, const std::string& pattern)->uint8_t
+    {
+        size_t patternLength = pattern.length();
+
+        if (node->value != pattern[1])
+        {
+            return 0;
+        }
+
+        const auto upLeft = grid.getNodeAt(Vec2::add(node->position, Vec2::VEC_UP_LEFT));
+        const auto upRight = grid.getNodeAt(Vec2::add(node->position, Vec2::VEC_UP_RIGHT));
+        const auto downLeft = grid.getNodeAt(Vec2::add(node->position, Vec2::VEC_DOWN_LEFT));
+        const auto downRight = grid.getNodeAt(Vec2::add(node->position, Vec2::VEC_DOWN_RIGHT));
+
+        if (
+            upLeft == nullptr
+            || upRight == nullptr
+            || downLeft == nullptr
+            || downRight == nullptr
+        )
+        {
+            return 0;
+        }
+
+        const bool valid = (
+            (upLeft->value == pattern[0] && downRight->value == pattern[2])
+            || (upLeft->value == pattern[2] && downRight->value == pattern[0])
+        ) && (
+            (upRight->value == pattern[0] && downLeft->value == pattern[2])
+            || (upRight->value == pattern[2] && downLeft->value == pattern[0])
+        );
+
+        return valid;
+    };
+
+    // Offset because it's impossible to construct a cross
+    // at the edges
+    for (int y = 1; y < height - 1; y++)
+    {
+        for (int x = 1; x < width - 1; x++)
+        {
+            GridNode* node = grid.getNodeAt(Vec2(x, y));
+            if (node == nullptr)
+            {
+                std::cout << "No Node at " << Vec2(x, y) << "\n";
+                continue;
+            }
+
+            result += checkNode(grid, node, toFind);
+        }
+    }
 
     return { result };
 }
