@@ -25,19 +25,26 @@ AocDayPartResult Aoc2024D04::runPart1() const
 
     int result = 0;
 
-    const auto checkNode = [](Grid& grid, GridNode* node, const std::string& pattern)->uint8_t
+    const auto checkOffset = [](Grid& grid, const Vec2& position, const char c)->bool
+    {
+        const GridNode* currentNode = grid.getNodeAt(position);
+        return currentNode != nullptr && currentNode->value == c;
+    };
+
+    const auto checkNode = [checkOffset](Grid& grid, GridNode* node, const std::string& pattern)->uint8_t
     {
         size_t patternLength = pattern.length();
         uint8_t result = 0;
 
-        bool found = true;
-        for(int x = 0; x < patternLength; x++)
+        if(node->value != pattern[0])
         {
-            GridNode* currentNode = x == 0
-                ? node
-                : grid.getNodeAt(Vec2(node->position.x + x, node->position.y));
+            return 0;
+        }
 
-            if (currentNode == nullptr || currentNode->value != pattern[x])
+        bool found = true;
+        for(int x = 1; x < patternLength; x++)
+        {
+            if(!checkOffset(grid, Vec2(node->position.x + x, node->position.y), pattern[x]))
             {
                 found = false;
                 break;
@@ -50,13 +57,9 @@ AocDayPartResult Aoc2024D04::runPart1() const
         }
 
         found = true;
-        for (int x = 0; x < patternLength; x++)
+        for (int x = 1; x < patternLength; x++)
         {
-            GridNode* currentNode = x == 0
-                ? node
-                : grid.getNodeAt(Vec2(node->position.x - x, node->position.y));
-
-            if (currentNode == nullptr || currentNode->value != pattern[x])
+            if (!checkOffset(grid, Vec2(node->position.x - x, node->position.y), pattern[x]))
             {
                 found = false;
                 break;
@@ -69,13 +72,9 @@ AocDayPartResult Aoc2024D04::runPart1() const
         }
 
         found = true;
-        for (int y = 0; y < patternLength; y++)
+        for (int y = 1; y < patternLength; y++)
         {
-            GridNode* currentNode = y == 0
-                ? node
-                : grid.getNodeAt(Vec2(node->position.x, node->position.y + y));
-
-            if (currentNode == nullptr || currentNode->value != pattern[y])
+            if (!checkOffset(grid, Vec2(node->position.x, node->position.y + y), pattern[y]))
             {
                 found = false;
                 break;
@@ -88,13 +87,9 @@ AocDayPartResult Aoc2024D04::runPart1() const
         }
 
         found = true;
-        for (int y = 0; y < patternLength; y++)
+        for (int y = 1; y < patternLength; y++)
         {
-            GridNode* currentNode = y == 0
-                ? node
-                : grid.getNodeAt(Vec2(node->position.x, node->position.y - y));
-
-            if (currentNode == nullptr || currentNode->value != pattern[y])
+            if (!checkOffset(grid, Vec2(node->position.x, node->position.y - y), pattern[y]))
             {
                 found = false;
                 break;
@@ -107,13 +102,9 @@ AocDayPartResult Aoc2024D04::runPart1() const
         }
 
         found = true;
-        for (int off = 0; off < patternLength; off++)
+        for (int off = 1; off < patternLength; off++)
         {
-            GridNode* currentNode = off == 0
-                ? node
-                : grid.getNodeAt(Vec2(node->position.x + off, node->position.y + off));
-
-            if (currentNode == nullptr || currentNode->value != pattern[off])
+            if (!checkOffset(grid, Vec2(node->position.x + off, node->position.y + off), pattern[off]))
             {
                 found = false;
                 break;
@@ -126,13 +117,9 @@ AocDayPartResult Aoc2024D04::runPart1() const
         }
 
         found = true;
-        for (int off = 0; off < patternLength; off++)
+        for (int off = 1; off < patternLength; off++)
         {
-            GridNode* currentNode = off == 0
-                ? node
-                : grid.getNodeAt(Vec2(node->position.x + off, node->position.y - off));
-
-            if (currentNode == nullptr || currentNode->value != pattern[off])
+            if (!checkOffset(grid, Vec2(node->position.x + off, node->position.y - off), pattern[off]))
             {
                 found = false;
                 break;
@@ -145,13 +132,9 @@ AocDayPartResult Aoc2024D04::runPart1() const
         }
 
         found = true;
-        for (int off = 0; off < patternLength; off++)
+        for (int off = 1; off < patternLength; off++)
         {
-            GridNode* currentNode = off == 0
-                ? node
-                : grid.getNodeAt(Vec2(node->position.x - off, node->position.y + off));
-
-            if (currentNode == nullptr || currentNode->value != pattern[off])
+            if (!checkOffset(grid, Vec2(node->position.x - off, node->position.y + off), pattern[off]))
             {
                 found = false;
                 break;
@@ -164,13 +147,9 @@ AocDayPartResult Aoc2024D04::runPart1() const
         }
 
         found = true;
-        for (int off = 0; off < patternLength; off++)
+        for (int off = 1; off < patternLength; off++)
         {
-            GridNode* currentNode = off == 0
-                ? node
-                : grid.getNodeAt(Vec2(node->position.x - off, node->position.y - off));
-
-            if (currentNode == nullptr || currentNode->value != pattern[off])
+            if (!checkOffset(grid, Vec2(node->position.x - off, node->position.y - off), pattern[off]))
             {
                 found = false;
                 break;

@@ -9,7 +9,7 @@ GridNode::GridNode(const Vec2& position, const uint8_t value)
 
 Grid::~Grid()
 {
-    for (auto pair : this->nodes)
+    for (const auto pair : this->nodes)
     {
         delete pair.second;
     }
