@@ -26,12 +26,7 @@ AocDayPartResult Aoc2024D07::runPart1() const
     auto getPossibilities = [](int maxBits)
     {
         std::vector<int> possibilities;
-        int until = 0;
-
-        for(int i = 0; i < maxBits; i++)
-        {
-            until |= 1 << i;
-        }
+        int until = 0xFFFFFFFF >> (32 - maxBits);
 
         for(int i = 0; i <= until; i++)
         {
