@@ -17,26 +17,6 @@ Aoc2024D07::~Aoc2024D07()
     delete this->data;
 }
 
-std::vector<int> Aoc2024D07::getPossibilities(int maxBits, std::map<int, std::vector<int>>* cache)
-{
-    if (cache->contains(maxBits))
-    {
-        return cache->at(maxBits);
-    }
-
-    std::vector<int> possibilities;
-    int until = 0xFFFFFFFF >> (32 - maxBits);
-
-    for (int i = 0; i <= until; i++)
-    {
-        possibilities.emplace_back(i);
-    }
-
-    cache->emplace(maxBits, possibilities);
-    return possibilities;
-}
-
-
 AocDayPartResult Aoc2024D07::runPart1() const
 {
     int64_t result = 0;
@@ -63,21 +43,22 @@ AocDayPartResult Aoc2024D07::runPart1() const
 
         if (c == '\n')
         {
-            bool valid = false;
+            const size_t lineSize = currentNumbers.size();
             const int64_t expected = currentNumbers[0];
-            const auto possibilities = getPossibilities(currentNumbers.size() - 1, &possibilityCache);
+            const int until = 0xFFFFFFFF >> (32 - lineSize - 1);
 
-            for(const auto possibility : possibilities)
+            for(int possibility = 0; possibility < until; possibility++)
             {
                 int64_t calcResult = 0;
                 int64_t previousNum = currentNumbers[1];
 
-                for(int j = 2; j < currentNumbers.size(); j++)
+                for(int j = 2; j < lineSize; j++)
                 {
                     const int64_t curr = currentNumbers[j];
+                    const int operation = possibility >> (j - 2) & 0x1;
                     int64_t currentCalcResult;
 
-                    switch (possibility >> (j - 2) & 0x1)
+                    switch (operation)
                     {
                     case 0:
                         currentCalcResult = previousNum + curr;
