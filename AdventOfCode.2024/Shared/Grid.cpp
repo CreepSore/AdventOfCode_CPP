@@ -76,6 +76,30 @@ uint8_t Grid::getHeight() const
     return this->height;
 }
 
+std::string Grid::toString()
+{
+    std::string result;
+
+    for(int y = 0; y < this->height; y++)
+    {
+        if(y != 0)
+        {
+            result.push_back('\n');
+        }
+
+        for(int x = 0; x < this->width; x++)
+        {
+            GridNode* node = this->getNodeAt(Vec2(x, y));
+            if(node != nullptr)
+            {
+                result.push_back(node->value);
+            }
+        }
+    }
+
+    return result;
+}
+
 
 Grid Grid::fromString(const std::string& data)
 {

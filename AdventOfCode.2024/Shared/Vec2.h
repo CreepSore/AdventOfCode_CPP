@@ -13,6 +13,8 @@ struct Vec2
     Vec2(uint8_t x, uint8_t y);
     uint16_t getHash() const;
 
+    void add(const Vec2& obj);
+
     /// <summary>
     /// Adds both Vectors together and returns a new Vec2 object
     /// </summary>

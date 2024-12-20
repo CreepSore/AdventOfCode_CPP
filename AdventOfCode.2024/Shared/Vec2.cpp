@@ -25,6 +25,12 @@ uint16_t Vec2::getHash() const
     return (this->x << 8) | this->y;
 }
 
+void Vec2::add(const Vec2& obj)
+{
+    this->x += obj.x;
+    this->y += obj.y;
+}
+
 Vec2 Vec2::add(const Vec2& obj0, const Vec2& obj1)
 {
     return {static_cast<uint8_t>(obj0.x + obj1.x), static_cast<uint8_t>(obj0.y + obj1.y)};

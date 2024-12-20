@@ -2,5 +2,5 @@
 
 struct AocDayPartResult
 {
-    int result;
+    int64_t result;
 };

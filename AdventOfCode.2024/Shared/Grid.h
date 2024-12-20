@@ -31,5 +31,7 @@ public:
     uint8_t getWidth() const;
     uint8_t getHeight() const;
 
+    std::string toString();
+    
     static Grid fromString(const std::string& data);
 };

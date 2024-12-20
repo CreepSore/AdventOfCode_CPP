@@ -208,6 +208,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="D07\Aoc2024D07.h" />
     <ClInclude Include="D01\Aoc2024D01.h" />
     <ClInclude Include="D02\Aoc2024D02.h" />
     <ClInclude Include="D03\Aoc2024D03.h" />
@@ -227,6 +228,7 @@
     <ClCompile Include="D03\Lexer.cpp" />
     <ClCompile Include="D04\Aoc2024D04.cpp" />
     <ClCompile Include="D06\Aoc2024D06.cpp" />
+    <ClCompile Include="D07\Aoc2024D07.cpp" />
     <ClCompile Include="Shared\Grid.cpp" />
     <ClCompile Include="Shared\Vec2.cpp" />
     <ClCompile Include="D05\Aoc2024D05.cpp" />
