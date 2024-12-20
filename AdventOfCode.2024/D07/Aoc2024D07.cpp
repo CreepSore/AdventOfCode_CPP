@@ -17,33 +17,32 @@ Aoc2024D07::~Aoc2024D07()
     delete this->data;
 }
 
+std::vector<int> Aoc2024D07::getPossibilities(int maxBits, std::map<int, std::vector<int>>* cache)
+{
+    if (cache->contains(maxBits))
+    {
+        return cache->at(maxBits);
+    }
+
+    std::vector<int> possibilities;
+    int until = 0xFFFFFFFF >> (32 - maxBits);
+
+    for (int i = 0; i <= until; i++)
+    {
+        possibilities.emplace_back(i);
+    }
+
+    cache->emplace(maxBits, possibilities);
+    return possibilities;
+}
+
+
 AocDayPartResult Aoc2024D07::runPart1() const
 {
     int64_t result = 0;
     std::vector<int64_t> currentNumbers;
+    std::map<int, std::vector<int>> possibilityCache;
     std::string buffer;
-
-    auto getPossibilities = [](int maxBits)
-    {
-        std::vector<int> possibilities;
-        int until = 0xFFFFFFFF >> (32 - maxBits);
-
-        for(int i = 0; i <= until; i++)
-        {
-            possibilities.push_back(i);
-        }
-
-        return possibilities;
-    };
-
-    std::map<const char, int64_t(*)(int64_t, int64_t)> operatorFnMapping = {
-        {0, [](int64_t num0, int64_t num1) -> int64_t {
-            return num0 + num1;
-        }},
-        {1, [](int64_t num0, int64_t num1) -> int64_t {
-            return num0 * num1;
-        }}
-    };
 
     for(const char c : *this->data)
     {
@@ -65,39 +64,43 @@ AocDayPartResult Aoc2024D07::runPart1() const
         if (c == '\n')
         {
             bool valid = false;
-            int64_t expected = currentNumbers[0];
-            auto possibilities = getPossibilities(currentNumbers.size() - 1);
+            const int64_t expected = currentNumbers[0];
+            const auto possibilities = getPossibilities(currentNumbers.size() - 1, &possibilityCache);
 
-            for(auto possibility : possibilities)
+            for(const auto possibility : possibilities)
             {
                 int64_t calcResult = 0;
                 int64_t previousNum = currentNumbers[1];
 
                 for(int j = 2; j < currentNumbers.size(); j++)
                 {
-                    auto toRun = operatorFnMapping[possibility >> (j - 2) & 0x1];
-                    int64_t curr = currentNumbers[j];
+                    const int64_t curr = currentNumbers[j];
+                    int64_t currentCalcResult;
 
-                    auto currentCalcResult = toRun(previousNum, curr);
+                    switch (possibility >> (j - 2) & 0x1)
+                    {
+                    case 0:
+                        currentCalcResult = previousNum + curr;
+                        break;
+
+                    case 1:
+                        currentCalcResult = previousNum * curr;
+                        break;
+
+                    default:
+                        currentCalcResult = 0;
+                        break;
+                    }
 
                     calcResult = currentCalcResult;
                     previousNum = currentCalcResult;
                 }
 
-                if(!valid)
+                if(calcResult == expected)
                 {
-                    valid = calcResult == expected;
-
-                    if(valid)
-                    {
-                        break;
-                    }
+                    result += expected;
+                    break;
                 }
-            }
-
-            if(valid)
-            {
-                result += expected;
             }
 
             currentNumbers.clear();

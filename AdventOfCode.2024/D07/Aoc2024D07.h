@@ -7,6 +7,7 @@ class Aoc2024D07 : public IAocDay
 private:
     AocDayPartResult runPart1() const;
     AocDayPartResult runPart2() const;
+    static std::vector<int> getPossibilities(int maxBits, std::map<int, std::vector<int>>* cache);
 
 public:
     Aoc2024D07();
