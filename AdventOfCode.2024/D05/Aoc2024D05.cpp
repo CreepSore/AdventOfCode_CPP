@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
+#include <math.h>
 #include <numeric>
 #include <set>
 
@@ -117,7 +118,7 @@ AocDayPartResult Aoc2024D05::runPart1() const
 
         if(valid)
         {
-            result += page->at(ceil(page->size() / 2));
+            result += page->at(std::ceil(page->size() / 2));
         }
     }
 
@@ -251,7 +252,7 @@ AocDayPartResult Aoc2024D05::runPart2() const
             std::sort(nums.begin(), nums.end(), [](ScannedNumber a, ScannedNumber b){
                 return a.after->contains(b.number) || !b.after->contains(a.number);
             });
-            result += nums.at(ceil(nums.size() / 2)).number;
+            result += nums.at(std::ceil(nums.size() / 2)).number;
         }
     }
 
