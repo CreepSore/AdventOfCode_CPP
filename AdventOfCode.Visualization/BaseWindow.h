@@ -5,7 +5,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "IRenderable.h"
-#include "../lib/imgui-sfml/imgui-SFML.h"
+#include <imgui-SFML.h>
 
 class BaseWindow
 {

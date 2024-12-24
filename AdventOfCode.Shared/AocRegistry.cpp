@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "AocRegistry.h"
 
 #include <iomanip>

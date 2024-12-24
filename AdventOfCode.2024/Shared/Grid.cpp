@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "Grid.h"
 
 GridNode::GridNode(const Vec2& position, const uint8_t value)

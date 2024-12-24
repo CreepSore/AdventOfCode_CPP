@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "Aoc2024D05.h"
 
 #include <algorithm>

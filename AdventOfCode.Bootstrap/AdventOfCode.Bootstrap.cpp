@@ -1,6 +1,6 @@
 #include <iostream>
+#include <imgui.h>
 
-#include "imgui_internal.h"
 #include "../AdventOfCode.2024/D01/Aoc2024D01.h"
 #include "../AdventOfCode.2024/D02/Aoc2024D02.h"
 #include "../AdventOfCode.2024/D03/Aoc2024D03.h"
@@ -12,7 +12,6 @@
 #include "../AdventOfCode.Shared/MultiLogger.h"
 #include "../AdventOfCode.Shared/utils.h"
 #include "../AdventOfCode.Visualization/BaseWindow.h"
-#include "../lib/imgui/imgui.h"
 #include "../AdventOfCode.Shared/StdoutLogger.h"
 #include "../AdventOfCode.Shared/VectorLogger.h"
 #include "../AdventOfCode.Visualization/PseudoRenderable.h"

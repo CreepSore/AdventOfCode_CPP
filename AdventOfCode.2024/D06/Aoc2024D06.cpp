@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "Aoc2024D06.h"
 
 #include <iostream>
@@ -6,6 +5,7 @@
 #include <numeric>
 #include <set>
 
+#include <imgui_internal.h>
 #include "../Shared/Grid.h"
 
 Aoc2024D06::Aoc2024D06()

@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "IAocDay.h"
 
 IAocDay::~IAocDay()
@@ -51,7 +50,7 @@ void IAocDay::initialize(const std::string& data, BaseWindow* window)
 
 void IAocDay::deinit()
 {
-    if(this->isVisual)
+    if(this->isVisual && this->window != nullptr)
     {
         this->window->removeRenderable(this);
     }

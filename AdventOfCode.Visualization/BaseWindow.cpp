@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "BaseWindow.h"
 
 #include <functional>
@@ -8,8 +7,8 @@
 #include <iostream>
 #include <string>
 
-#include "../lib/imgui/imgui.h"
-#include "../lib/imgui-sfml/imgui-SFML.h"
+#include <imgui.h>
+#include <imgui-SFML.h>
 
 BaseWindow::BaseWindow(
     std::string& title,

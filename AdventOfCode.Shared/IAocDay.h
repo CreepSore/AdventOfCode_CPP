@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <imgui.h>
 
 #include "AocDayPartResult.h"
 #include "../AdventOfCode.Visualization/BaseWindow.h"

@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "Aoc2024D03.h"
 
 #include "Lexer.h"

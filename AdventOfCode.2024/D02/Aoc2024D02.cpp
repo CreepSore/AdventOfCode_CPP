@@ -1,8 +1,6 @@
-#include "pch.h"
 #include "Aoc2024D02.h"
 
 #include <algorithm>
-#include <iostream>
 #include <map>
 #include <vector>
 
