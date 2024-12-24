@@ -20,9 +20,14 @@ Aoc2024D06::~Aoc2024D06()
     delete this->data;
 }
 
-void Aoc2024D06::renderPart1()
+void Aoc2024D06::render(BaseWindow* window)
 {
-    std::string title = std::format("Grid (Depth {})", this->part1RenderData->inDepth);
+    if(this->renderArgs == nullptr)
+    {
+        return;
+    }
+
+    std::string title = std::format("Grid (Depth {})", this->renderArgs->inDepth);
 
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->Pos);
@@ -40,7 +45,7 @@ void Aoc2024D06::renderPart1()
         {
             this->dataVisible = !this->dataVisible;
 
-            if(this->dataVisible)
+            if (this->dataVisible)
             {
                 ImGui::SetNextWindowFocus();
             }
@@ -56,10 +61,10 @@ void Aoc2024D06::renderPart1()
         {
             ImGui::SameLine();
             ImGui::PushID("PauseButton");
-            if (ImGui::Button(this->part1RenderData->paused ? "Resume" : "Pause"))
+            if (ImGui::Button(this->renderArgs->paused ? "Resume" : "Pause"))
             {
-                this->part1RenderData->paused = !this->part1RenderData->paused;
-                this->part1RenderData->changed = true;
+                this->renderArgs->paused = !this->renderArgs->paused;
+                this->renderArgs->changed = true;
             }
             ImGui::PopID();
         }
@@ -68,16 +73,16 @@ void Aoc2024D06::renderPart1()
             ImGui::SameLine();
             if (ImGui::Button("Skip"))
             {
-                this->part1RenderData->skip = !this->part1RenderData->skip;
-                this->part1RenderData->changed = true;
+                this->renderArgs->skip = !this->renderArgs->skip;
+                this->renderArgs->changed = true;
             }
         }
 
         {
             ImGui::SameLine();
-            if (ImGui::SliderInt("Steps", &this->part1RenderData->stepConfig, 1, 1000))
+            if (ImGui::SliderInt("Steps", &this->renderArgs->stepConfig, 1, 1000))
             {
-                this->part1RenderData->stepConfig = std::max(this->part1RenderData->stepConfig - (this->part1RenderData->stepConfig % 10), 1);
+                this->renderArgs->stepConfig = std::max(this->renderArgs->stepConfig - (this->renderArgs->stepConfig % 10), 1);
             }
         }
 
@@ -85,8 +90,8 @@ void Aoc2024D06::renderPart1()
             ImGui::SameLine();
             if (ImGui::Button("Step", ImVec2(100, 20)))
             {
-                this->part1RenderData->step = this->part1RenderData->stepConfig;
-                this->part1RenderData->changed = true;
+                this->renderArgs->step = this->renderArgs->stepConfig;
+                this->renderArgs->changed = true;
             }
         }
 
@@ -96,13 +101,13 @@ void Aoc2024D06::renderPart1()
     {
         ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
         ImGui::BeginChild("View", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y));
-        if (ImGui::BeginTable("grid", this->part1RenderData->inGrid->getWidth(), ImGuiTableFlags_SizingFixedFit))
+        if (ImGui::BeginTable("grid", this->renderArgs->inGrid->getWidth(), ImGuiTableFlags_SizingFixedFit))
         {
-            for (int y = 0; y < this->part1RenderData->inGrid->getHeight(); y++)
+            for (int y = 0; y < this->renderArgs->inGrid->getHeight(); y++)
             {
-                for (int x = 0; x < this->part1RenderData->inGrid->getWidth(); x++)
+                for (int x = 0; x < this->renderArgs->inGrid->getWidth(); x++)
                 {
-                    auto node = this->part1RenderData->inGrid->getNodeAt(Vec2(x, y));
+                    auto node = this->renderArgs->inGrid->getNodeAt(Vec2(x, y));
 
                     std::string text;
                     text.push_back(node->value);
@@ -118,7 +123,7 @@ void Aoc2024D06::renderPart1()
                     case '.':
                         color = ImVec4(0.6, 0.6, 0.6, 1);
 
-                        if (this->part1RenderData->inVisitedPositions->contains(node->position.getHash()))
+                        if (this->renderArgs->inVisitedPositions->contains(node->position.getHash()))
                         {
                             color = ImVec4(0, 1, 0, 1);
                         }
@@ -155,14 +160,6 @@ void Aoc2024D06::renderPart1()
     ImGui::PopID();
 }
 
-void Aoc2024D06::render(BaseWindow* window)
-{
-    if(this->part1RenderData != nullptr)
-    {
-        this->renderPart1();
-    }
-}
-
 AocDayPartResult Aoc2024D06::runPart1()
 {
     static std::map<uint16_t, Vec2> rotation = {
@@ -186,11 +183,11 @@ AocDayPartResult Aoc2024D06::runPart1()
         }
     }
 
-    this->part1RenderData = new Part1RenderData(&grid, -1, nullptr);
+    this->renderArgs = new RenderData(&grid, -1, nullptr);
 
     result = traverseGrid(grid, startPosition, Vec2::VEC_UP, nullptr, 0).visited;
-    delete this->part1RenderData;
-    this->part1RenderData = nullptr;
+    delete this->renderArgs;
+    this->renderArgs = nullptr;
 
     return { result };
 }
@@ -206,7 +203,6 @@ AocDayPartResult Aoc2024D06::runPart2()
 
     int result = 0;
 
-    Grid visualGrid = Grid::fromString(*this->data);
     Grid grid = Grid::fromString(*this->data);
     Vec2 startPosition;
 
@@ -219,7 +215,10 @@ AocDayPartResult Aoc2024D06::runPart2()
         }
     }
 
+    this->renderArgs = new RenderData(&grid, -1, nullptr);
     auto traversed = traverseGrid(grid, startPosition, Vec2::VEC_UP, nullptr, 1);
+    delete this->renderArgs;
+    this->renderArgs = nullptr;
 
     for (auto block : traversed.blocks)
     {
@@ -273,31 +272,29 @@ Aoc2024D06::TraverseResult Aoc2024D06::traverseGrid(
 
     for(;;)
     {
-        if(this->window != nullptr)
+        if(this->window != nullptr && this->renderArgs != nullptr)
         {
-            if(this->part1RenderData != nullptr)
+            this->renderArgs->inVisitedPositions = &visitedPositions;
+            this->renderArgs->changed = true;
+            this->renderArgs->inDepth = depth;
+
+            while(
+                this->window != nullptr
+                && (this->renderArgs->changed || this->renderArgs->paused)
+                && this->renderArgs->step == 0 && !this->renderArgs->skip
+            )
             {
-                this->part1RenderData->inVisitedPositions = &visitedPositions;
-                this->part1RenderData->changed = true;
+                this->renderArgs->changed = false;
 
-                while(
-                    this->window != nullptr
-                    && (this->part1RenderData->changed || this->part1RenderData->paused)
-                    && this->part1RenderData->step == 0 && !this->part1RenderData->skip
-                )
-                {
-                    this->part1RenderData->changed = false;
+                const char old = currentNode->value;
+                currentNode->value = 'X';
+                this->handleVisual();
+                currentNode->value = old;
+            }
 
-                    const char old = currentNode->value;
-                    currentNode->value = 'X';
-                    this->handleVisual();
-                    currentNode->value = old;
-                }
-
-                if (this->part1RenderData->step > 0)
-                {
-                    this->part1RenderData->step -= 1;
-                }
+            if (this->renderArgs->step > 0)
+            {
+                this->renderArgs->step -= 1;
             }
         }
 

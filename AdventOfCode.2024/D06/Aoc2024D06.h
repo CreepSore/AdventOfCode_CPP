@@ -16,7 +16,7 @@ private:
         std::vector<Vec2> blocks;
     };
 
-    struct Part1RenderData
+    struct RenderData
     {
         Grid* inGrid;
         int inDepth;
@@ -28,7 +28,7 @@ private:
         int stepConfig = 1;
         bool changed = false;
 
-        Part1RenderData(Grid* inGrid, int inDepth, std::set<uint16_t>* inVisitedPositions)
+        RenderData(Grid* inGrid, int inDepth, std::set<uint16_t>* inVisitedPositions)
         {
             this->inGrid = inGrid;
             this->inDepth = inDepth;
@@ -47,9 +47,7 @@ private:
         int depth = 0
     );
 
-    Part1RenderData* part1RenderData = nullptr;
-
-    void renderPart1();
+    RenderData* renderArgs = nullptr;
 public:
     Aoc2024D06();
     ~Aoc2024D06() override;
