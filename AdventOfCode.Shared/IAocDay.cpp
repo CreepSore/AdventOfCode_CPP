@@ -1,6 +1,11 @@
 #include "pch.h"
 #include "IAocDay.h"
 
+IAocDay::~IAocDay()
+{
+    this->deinit();
+}
+
 uint8_t IAocDay::getDay() const
 {
     return this->day;
@@ -37,21 +42,32 @@ void IAocDay::initialize(const std::string& data, BaseWindow* window)
 {
     this->initialize(data);
     this->window = window;
+
+    if (this->isVisual)
+    {
+        window->addRenderable(this);
+    }
+}
+
+void IAocDay::deinit()
+{
+    if(this->isVisual)
+    {
+        this->window->removeRenderable(this);
+    }
 }
 
 void IAocDay::handleVisual()
 {
-    if(!this->getIsVisual() || this->window == nullptr)
+    if(this->window == nullptr)
     {
         return;
     }
 
-    this->window->tickOnce<IAocDay>([](IAocDay* t) {
-        t->render();
-    }, this);
+    this->window->tickOnce();
 }
 
-void IAocDay::render()
+void IAocDay::render(BaseWindow* window)
 {
     // Do nothing by default
 }

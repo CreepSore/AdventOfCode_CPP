@@ -4,10 +4,11 @@
 template <typename ArgsType>
 class PseudoRenderable : public IRenderable
 {
-    void(*fn)(ArgsType*);
-    ArgsType* args;
+    void(*fn)(PseudoRenderable*, ArgsType&);
+    ArgsType args;
 
-    PseudoRenderable(void(*fn)(ArgsType*), ArgsType* args)
+public:
+    PseudoRenderable(void(*fn)(PseudoRenderable*, ArgsType&), ArgsType args)
     {
         this->fn = fn;
         this->args = args;
@@ -15,6 +16,6 @@ class PseudoRenderable : public IRenderable
 
     void render(BaseWindow* window) override
     {
-        this->fn(this->args);
+        this->fn(this, this->args);
     }
 };

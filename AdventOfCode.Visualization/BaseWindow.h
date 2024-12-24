@@ -56,6 +56,11 @@ public:
             onRender(args);
         }
 
+        for(IRenderable* renderable : this->renderables)
+        {
+            renderable->render(this);
+        }
+
         this->window->clear();
         ImGui::SFML::Render(*this->window);
         window->display();

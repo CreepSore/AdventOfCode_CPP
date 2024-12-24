@@ -5,7 +5,7 @@
 #include "AocDayPartResult.h"
 #include "../AdventOfCode.Visualization/BaseWindow.h"
 
-class IAocDay
+class IAocDay : IRenderable
 {
 protected:
     std::string* data = nullptr;
@@ -24,9 +24,10 @@ public:
 
     void initialize(const std::string& data);
     void initialize(const std::string& data, BaseWindow* window);
+    void deinit();
     void handleVisual();
+    virtual void render(BaseWindow* window) override;
 
-    virtual ~IAocDay() = default;
-    virtual void render();
+    virtual ~IAocDay();
     virtual void run(std::vector<AocDayPartResult>& resultList, int part = -1) = 0;
 };

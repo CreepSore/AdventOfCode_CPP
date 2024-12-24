@@ -126,7 +126,7 @@ void Aoc2024D06::renderPart1()
     ImGui::PopID();
 }
 
-void Aoc2024D06::render()
+void Aoc2024D06::render(BaseWindow* window)
 {
     if(this->part1RenderData != nullptr)
     {

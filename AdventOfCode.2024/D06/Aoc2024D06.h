@@ -53,5 +53,5 @@ public:
     ~Aoc2024D06() override;
     
     void run(std::vector<AocDayPartResult>& resultList, int part) override;
-    void render() override;
+    void render(BaseWindow* window) override;
 };

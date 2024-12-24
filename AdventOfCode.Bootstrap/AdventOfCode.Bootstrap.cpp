@@ -15,6 +15,7 @@
 #include "../lib/imgui/imgui.h"
 #include "../AdventOfCode.Shared/StdoutLogger.h"
 #include "../AdventOfCode.Shared/VectorLogger.h"
+#include "../AdventOfCode.Visualization/PseudoRenderable.h"
 
 #define IMGUI_USER_CONFIG "imgui_config.h"
 
@@ -67,6 +68,74 @@ MenuResult showMenu()
     }
 
     return {year, day};
+}
+
+PseudoRenderable<std::tuple<bool, AocRegistry*, BaseWindow*>> constructRenderable(AocRegistry& registry, BaseWindow& window)
+{
+    auto args = std::make_tuple(true, &registry, &window);
+
+    return PseudoRenderable<std::tuple<bool, AocRegistry*, BaseWindow*>>([](auto thisRenderable, auto& args) {
+        AocRegistry* registry = std::get<1>(args);
+        BaseWindow* window = std::get<2>(args);
+
+        auto viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowSize(viewport->Size);
+        ImGui::SetNextWindowPos(viewport->Pos);
+
+        if (!ImGui::Begin("Run Day", 0, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse))
+        {
+            ImGui::End();
+            return;
+        }
+
+        if (ImGui::Button("All", ImVec2(ImGui::GetContentRegionAvail().x, 20)))
+        {
+            // We have to end here because days also render stuff
+            ImGui::End();
+            registry->run(window);
+            return;
+        }
+
+        for (auto day : registry->days)
+        {
+            std::string label;
+            label.append(std::to_string(day->getYear()));
+            label.append(" ");
+            label.append(std::to_string(day->getDay()));
+
+            ImGui::BeginDisabled(!day->getIsVisual());
+            if (ImGui::Button(label.data(), ImVec2(ImGui::GetContentRegionAvail().x - 100, 0)))
+            {
+                // We have to end here because days also render stuff
+                ImGui::EndDisabled();
+                ImGui::End();
+                ImGui::EndFrame();
+                window->removeRenderable(thisRenderable);
+
+                registry->runDay(day, window);
+                return;
+            }
+            ImGui::EndDisabled();
+
+            ImGui::SameLine();
+            ImGui::PushID(std::format("?{}", day->getId()).data());
+            if (ImGui::Button("?", ImVec2(ImGui::GetContentRegionAvail().x / 2, 0)))
+            {
+                openBrowser(std::format("https://adventofcode.com/{}/day/{}", day->getYear(), day->getDay()).data());
+            }
+            ImGui::PopID();
+
+            ImGui::SameLine();
+            ImGui::PushID(std::format("I{}", day->getId()).data());
+            if (ImGui::Button("I", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+            {
+                openBrowser(std::format("https://adventofcode.com/{}/day/{}/input", day->getYear(), day->getDay()).data());
+            }
+            ImGui::PopID();
+        }
+
+        ImGui::End();
+    }, args);
 }
 
 int main(int argc, char* argv[])
@@ -183,84 +252,11 @@ int main(int argc, char* argv[])
     }
     else if(visual)
     {
-        struct VisualArgs
-        {
-            bool ticking;
-            AocRegistry* registry;
-            BaseWindow* window;
-        };
-
-
         auto window = BaseWindow(title);
-        VisualArgs args{true, &registry, &window};
-        bool tick = true;
+        auto renderable = constructRenderable(registry, window);
+        window.addRenderable(&renderable);
 
-        auto fn = [](VisualArgs* args) {
-            auto viewport = ImGui::GetMainViewport();
-            ImGui::SetNextWindowSize(viewport->Size);
-            ImGui::SetNextWindowPos(viewport->Pos);
-
-            if(!ImGui::Begin("Run Day", 0, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse))
-            {
-                ImGui::End();
-                return;
-            }
-
-            if(ImGui::Button("All", ImVec2(ImGui::GetContentRegionAvail().x, 20)))
-            {
-                // We have to end here because days also render stuff
-                ImGui::End();
-                args->registry->run(args->window);
-                args->ticking = false;
-                return;
-            }
-
-            for (auto day : args->registry->days)
-            {
-                std::string label;
-                label.append(std::to_string(day->getYear()));
-                label.append(" ");
-                label.append(std::to_string(day->getDay()));
-
-                ImGui::BeginDisabled(!day->getIsVisual());
-                if(ImGui::Button(label.data(), ImVec2(ImGui::GetContentRegionAvail().x - 100, 0)))
-                {
-                    // We have to end here because days also render stuff
-                    ImGui::EndDisabled();
-                    ImGui::End();
-
-                    args->registry->runDay(day, args->window);
-                    args->ticking = false;
-                    return;
-                }
-                ImGui::EndDisabled();
-
-                ImGui::SameLine();
-                ImGui::PushID(std::format("?{}", day->getId()).data());
-                if(ImGui::Button("?", ImVec2(ImGui::GetContentRegionAvail().x / 2, 0)))
-                {
-                    openBrowser(std::format("https://adventofcode.com/{}/day/{}", day->getYear(), day->getDay()).data());
-                }
-                ImGui::PopID();
-
-                ImGui::SameLine();
-                ImGui::PushID(std::format("I{}", day->getId()).data());
-                if (ImGui::Button("I", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
-                {
-                    openBrowser(std::format("https://adventofcode.com/{}/day/{}/input", day->getYear(), day->getDay()).data());
-                }
-                ImGui::PopID();
-            }
-
-            ImGui::End();
-        };
-
-        while(args.ticking && window.window != nullptr)
-        {
-            window.tickOnce<VisualArgs>(+fn, &args);
-        }
-
-        if(window.window == nullptr)
+        while(window.window != nullptr)
         {
             window.tickOnce();
         }
