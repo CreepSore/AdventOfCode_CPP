@@ -69,18 +69,45 @@ MenuResult showMenu()
     return {year, day};
 }
 
-PseudoRenderable<std::tuple<AocRegistry*, BaseWindow*, VectorLogger*>> constructRenderable(AocRegistry& registry, BaseWindow& window, VectorLogger& logger)
+PseudoRenderable<
+    std::tuple<
+        bool,
+        AocRegistry*,
+        BaseWindow*,
+        VectorLogger*,
+        std::map<uint16_t, std::vector<IAocDay*>>*
+    >
+> constructRenderable(
+    AocRegistry& registry,
+    BaseWindow& window,
+    VectorLogger& logger,
+    std::map<uint16_t, std::vector<IAocDay*>>& days
+)
 {
     auto args = std::make_tuple(
+        true,
         &registry,
         &window,
-        &logger
+        &logger,
+        &days
     );
 
-    return PseudoRenderable<std::tuple<AocRegistry*, BaseWindow*, VectorLogger*>>([](auto thisRenderable, auto& args) {
-        AocRegistry* registry = std::get<0>(args);
-        BaseWindow* window = std::get<1>(args);
-        VectorLogger* logger = std::get<2>(args);
+    return PseudoRenderable<
+        std::tuple<
+            bool,
+            AocRegistry*,
+            BaseWindow*,
+            VectorLogger*,
+            std::map<uint16_t, std::vector<IAocDay*>>*
+        >
+    >([](auto thisRenderable, auto& args) {
+        bool init = std::get<0>(args);
+        AocRegistry* registry = std::get<1>(args);
+        BaseWindow* window = std::get<2>(args);
+        VectorLogger* logger = std::get<3>(args);
+        std::map<uint16_t, std::vector<IAocDay*>>* days = std::get<4>(args);
+
+        std::get<0>(args) = false;
 
         auto viewport = ImGui::GetMainViewport();
 
@@ -147,58 +174,70 @@ PseudoRenderable<std::tuple<AocRegistry*, BaseWindow*, VectorLogger*>> construct
             return;
         }
 
-        for (auto day : registry->days)
+        for(auto year : *days)
         {
-            std::string label;
-            label.append(std::to_string(day->getYear()));
-            label.append(" ");
-            label.append(std::to_string(day->getDay()));
-
-            if(day->getIsVisual())
+            if(init)
             {
-                ImVec4 old = ImGui::GetStyleColorVec4(ImGuiCol_Button);
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, old.z, 0, old.w));
+                ImGui::SetNextItemOpen(true);
             }
 
-            if (ImGui::Button(label.data(), ImVec2(ImGui::GetContentRegionAvail().x - 100, 0)))
+            if (ImGui::TreeNode(std::to_string(year.first).data()))
             {
-                if (day->getIsVisual())
+                for (auto day : year.second)
                 {
-                    window->removeRenderable(thisRenderable);
-                    ImGui::PopStyleColor();
+                    std::string label;
+                    label.append(std::to_string(day->getYear()));
+                    label.append(" ");
+                    label.append(std::to_string(day->getDay()));
+
+                    if (day->getIsVisual())
+                    {
+                        ImVec4 old = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+                        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, old.z, 0, old.w));
+                    }
+
+                    if (ImGui::Button(label.data(), ImVec2(ImGui::GetContentRegionAvail().x - 100, 0)))
+                    {
+                        if (day->getIsVisual())
+                        {
+                            window->removeRenderable(thisRenderable);
+                            ImGui::PopStyleColor();
+                        }
+
+                        // We have to end here because days also render stuff
+                        ImGui::TreePop();
+                        ImGui::End();
+                        ImGui::EndFrame();
+
+                        registry->runDay(day, window);
+
+                        return;
+                    }
+
+                    if (day->getIsVisual())
+                    {
+                        ImGui::PopStyleColor();
+                    }
+
+                    ImGui::SameLine();
+                    ImGui::PushID(std::format("?{}", day->getId()).data());
+                    if (ImGui::Button("?", ImVec2(ImGui::GetContentRegionAvail().x / 2, 0)))
+                    {
+                        openBrowser(std::format("https://adventofcode.com/{}/day/{}", day->getYear(), day->getDay()).data());
+                    }
+                    ImGui::PopID();
+
+                    ImGui::SameLine();
+                    ImGui::PushID(std::format("I{}", day->getId()).data());
+                    if (ImGui::Button("I", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+                    {
+                        openBrowser(std::format("https://adventofcode.com/{}/day/{}/input", day->getYear(), day->getDay()).data());
+                    }
+                    ImGui::PopID();
                 }
 
-                // We have to end here because days also render stuff
-                ImGui::End();
-                ImGui::EndFrame();
-
-                registry->runDay(day, window);
-
-                return;
+                ImGui::TreePop();
             }
-
-            if (day->getIsVisual())
-            {
-                ImGui::PopStyleColor();
-            }
-
-            //ImGui::EndDisabled();
-
-            ImGui::SameLine();
-            ImGui::PushID(std::format("?{}", day->getId()).data());
-            if (ImGui::Button("?", ImVec2(ImGui::GetContentRegionAvail().x / 2, 0)))
-            {
-                openBrowser(std::format("https://adventofcode.com/{}/day/{}", day->getYear(), day->getDay()).data());
-            }
-            ImGui::PopID();
-
-            ImGui::SameLine();
-            ImGui::PushID(std::format("I{}", day->getId()).data());
-            if (ImGui::Button("I", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
-            {
-                openBrowser(std::format("https://adventofcode.com/{}/day/{}/input", day->getYear(), day->getDay()).data());
-            }
-            ImGui::PopID();
         }
 
         ImGui::End();
@@ -321,7 +360,14 @@ int main(int argc, char* argv[])
         auto window = BaseWindow(title);
         ImGui::GetIO().IniFilename = nullptr;
 
-        auto renderable = constructRenderable(registry, window, vectorLogger);
+        std::map<uint16_t, std::vector<IAocDay*>> yearDayMapping;
+
+        for(auto aocDay : registry.days)
+        {
+            yearDayMapping[aocDay->getYear()].push_back(aocDay);
+        }
+
+        auto renderable = constructRenderable(registry, window, vectorLogger, yearDayMapping);
 
         while(window.window != nullptr)
         {
