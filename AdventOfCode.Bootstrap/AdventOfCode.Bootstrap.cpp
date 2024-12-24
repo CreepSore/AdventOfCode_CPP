@@ -140,6 +140,9 @@ PseudoRenderable<std::tuple<AocRegistry*, BaseWindow*, VectorLogger*>> construct
         {
             // We have to end here because days also render stuff
             ImGui::End();
+            ImGui::EndFrame();
+            window->removeRenderable(thisRenderable);
+
             registry->run(window);
             return;
         }
