@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "imgui_internal.h"
 #include "../AdventOfCode.2024/D01/Aoc2024D01.h"
 #include "../AdventOfCode.2024/D02/Aoc2024D02.h"
 #include "../AdventOfCode.2024/D03/Aoc2024D03.h"
@@ -8,6 +9,14 @@
 #include "../AdventOfCode.2024/D06/Aoc2024D06.h"
 #include "../AdventOfCode.2024/D07/Aoc2024D07.h"
 #include "../AdventOfCode.Shared/AocRegistry.h"
+#include "../AdventOfCode.Shared/MultiLogger.h"
+#include "../AdventOfCode.Shared/utils.h"
+#include "../AdventOfCode.Visualization/BaseWindow.h"
+#include "../lib/imgui/imgui.h"
+#include "../AdventOfCode.Shared/StdoutLogger.h"
+#include "../AdventOfCode.Shared/VectorLogger.h"
+
+#define IMGUI_USER_CONFIG "imgui_config.h"
 
 struct MenuResult
 {
@@ -62,6 +71,8 @@ MenuResult showMenu()
 
 int main(int argc, char* argv[])
 {
+    std::string title = std::string("OIDA");
+
     enum class ArgParseModes : uint8_t
     {
         NONE=0,
@@ -73,6 +84,7 @@ int main(int argc, char* argv[])
     std::string basedir;
     bool benchmark = false;
     bool interactive = false;
+    bool visual = false;
     int day = -1;
     int year = -1;
     ArgParseModes parseMode = ArgParseModes::NONE;
@@ -88,6 +100,14 @@ int main(int argc, char* argv[])
             {
                 benchmark = true;
             }
+            else if (arg == "-int")
+            {
+                interactive = true;
+            }
+            else if (arg == "-vis")
+            {
+                visual = true;
+            }
             else if (arg == "-basedir")
             {
                 parseMode = ArgParseModes::BASEDIR;
@@ -99,10 +119,6 @@ int main(int argc, char* argv[])
             else if (arg == "-year")
             {
                 parseMode = ArgParseModes::YEAR;
-            }
-            else if(arg == "-int")
-            {
-                interactive = true;
             }
 
             break;
@@ -142,9 +158,20 @@ int main(int argc, char* argv[])
     };
 
     AocRegistry registry = AocRegistry(std::string(basedir));
+    MultiLogger multiLogger;
+    StdoutLogger stdoutLogger;
+    VectorLogger vectorLogger;
+
+    multiLogger.appendLogger(&stdoutLogger);
+    multiLogger.appendLogger(&vectorLogger);
+    registry.logger = &multiLogger;
+
     for (const auto aocDay : days)
     {
-        if(year == -1 || (aocDay->getYear() == year && (day == -1 || aocDay->getDay() == day)))
+        bool inTimeRange = year == -1 || (aocDay->getYear() == year && (day == -1 || aocDay->getDay() == day));
+        //bool isVisual = visual == aocDay->getIsVisual();
+
+        if(inTimeRange /* && isVisual */)
         {
             registry.registerDay(aocDay);
         }
@@ -153,6 +180,90 @@ int main(int argc, char* argv[])
     if(benchmark)
     {
         registry.runBenchmark();
+    }
+    else if(visual)
+    {
+        struct VisualArgs
+        {
+            bool ticking;
+            AocRegistry* registry;
+            BaseWindow* window;
+        };
+
+
+        auto window = BaseWindow(title);
+        VisualArgs args{true, &registry, &window};
+        bool tick = true;
+
+        auto fn = [](VisualArgs* args) {
+            auto viewport = ImGui::GetMainViewport();
+            ImGui::SetNextWindowSize(viewport->Size);
+            ImGui::SetNextWindowPos(viewport->Pos);
+
+            if(!ImGui::Begin("Run Day", 0, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse))
+            {
+                ImGui::End();
+                return;
+            }
+
+            if(ImGui::Button("All", ImVec2(ImGui::GetContentRegionAvail().x, 20)))
+            {
+                // We have to end here because days also render stuff
+                ImGui::End();
+                args->registry->run(args->window);
+                args->ticking = false;
+                return;
+            }
+
+            for (auto day : args->registry->days)
+            {
+                std::string label;
+                label.append(std::to_string(day->getYear()));
+                label.append(" ");
+                label.append(std::to_string(day->getDay()));
+
+                ImGui::BeginDisabled(!day->getIsVisual());
+                if(ImGui::Button(label.data(), ImVec2(ImGui::GetContentRegionAvail().x - 100, 0)))
+                {
+                    // We have to end here because days also render stuff
+                    ImGui::EndDisabled();
+                    ImGui::End();
+
+                    args->registry->runDay(day, args->window);
+                    args->ticking = false;
+                    return;
+                }
+                ImGui::EndDisabled();
+
+                ImGui::SameLine();
+                ImGui::PushID(std::format("?{}", day->getId()).data());
+                if(ImGui::Button("?", ImVec2(ImGui::GetContentRegionAvail().x / 2, 0)))
+                {
+                    openBrowser(std::format("https://adventofcode.com/{}/day/{}", day->getYear(), day->getDay()).data());
+                }
+                ImGui::PopID();
+
+                ImGui::SameLine();
+                ImGui::PushID(std::format("I{}", day->getId()).data());
+                if (ImGui::Button("I", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+                {
+                    openBrowser(std::format("https://adventofcode.com/{}/day/{}/input", day->getYear(), day->getDay()).data());
+                }
+                ImGui::PopID();
+            }
+
+            ImGui::End();
+        };
+
+        while(args.ticking && window.window != nullptr)
+        {
+            window.tickOnce<VisualArgs>(+fn, &args);
+        }
+
+        if(window.window == nullptr)
+        {
+            window.tickOnce();
+        }
     }
     else
     {

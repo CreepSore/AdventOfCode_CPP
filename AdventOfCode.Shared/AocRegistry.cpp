@@ -39,64 +39,73 @@ void AocRegistry::run() const
 {
     for (auto day : this->days)
     {
-        auto sDay = std::to_string(day->getDay());
-
-        if(sDay.length() == 1)
-        {
-            sDay.insert(0, "0");
-        }  
-
-        std::cout
-            << "Running ["
-            << std::to_string(day->getYear())
-            << "/"
-            << sDay
-            << "]:\n";
-
-        std::vector<AocDayPartResult> results;
-        const std::string* data = this->loadData(day->getYear(), day->getDay());
-
-        if(data == nullptr)
-        {
-            std::cout << "    No datafile found" << "\n\n";
-            continue;
-        }
-
-        day->initialize(*data);
-
-        for(int i = 1; i <= day->getPartCount(); i++)
-        {
-            results.clear();
-
-            std::cout
-                << "    Part "
-                << std::to_string(i)
-                << ": [";
-
-            auto begin = std::chrono::steady_clock::now();
-            day->run(results, i);
-
-            if(results.size() == 1)
-            {
-                std::cout << std::to_string(results[0].result);
-            }
-
-            std::cout
-                << "] ";
-
-            std::string runtime;
-            int type = 1;
-            auto time = std::chrono::steady_clock::now() - begin;
-
-            std::cout
-                << AocRegistry::durationToString(time)
-                << '\n';
-        }
-
-        std::cout << '\n';
-
-        delete data;
+        this->runDay(day);
     }
+}
+
+void AocRegistry::run(BaseWindow* window) const
+{
+    for (auto day : this->days)
+    {
+        this->runDay(day, window);
+    }
+}
+
+void AocRegistry::runDay(IAocDay* day, BaseWindow* window) const
+{
+    auto sDay = std::to_string(day->getDay());
+
+    if (sDay.length() == 1)
+    {
+        sDay.insert(0, "0");
+    }
+
+    this->logger->print(std::format("Running [{}/{}]:", day->getYear(), sDay).data());
+
+    std::vector<AocDayPartResult> results;
+    const std::string* data = this->loadData(day->getYear(), day->getDay());
+
+    if (data == nullptr)
+    {
+        this->logger->print("    No datafile found");
+        this->logger->print("");
+        return;
+    }
+
+    if(window == nullptr)
+    {
+        day->initialize(*data);
+    }
+    else
+    {
+        day->initialize(*data, window);
+    }
+
+    for (int i = 1; i <= day->getPartCount(); i++)
+    {
+        results.clear();
+
+        this->logger->print(std::format("    Part {}:", i).data());
+
+        auto begin = std::chrono::steady_clock::now();
+        day->run(results, i);
+
+        if (results.size() == 1)
+        {
+            this->logger->print(std::format("      Result: {}", results[0].result).data());
+        }
+
+        std::string runtime;
+        int type = 1;
+        auto time = std::chrono::steady_clock::now() - begin;
+
+        this->logger->print(std::format("      Runtime: {}", AocRegistry::durationToString(time)).data());
+        this->logger->print("");
+    }
+
+    this->logger->print("");
+
+    delete data;
 }
 
 void AocRegistry::runBenchmark() const

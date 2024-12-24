@@ -107,6 +107,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)lib\SFML-3.0.0\include;$(SolutionDir)lib\imgui;$(SolutionDir)lib\imgui-sfml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -141,6 +142,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)lib\SFML-3.0.0\include;$(SolutionDir)lib\imgui;$(SolutionDir)lib\imgui-sfml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -215,7 +217,12 @@
     <ClInclude Include="AocRegistry.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="IAocDay.h" />
+    <ClInclude Include="ILogger.h" />
+    <ClInclude Include="MultiLogger.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="StdoutLogger.h" />
+    <ClInclude Include="utils.h" />
+    <ClInclude Include="VectorLogger.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AocRegistry.cpp" />

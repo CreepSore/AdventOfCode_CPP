@@ -163,6 +163,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)lib\SFML-3.0.0\include;$(SolutionDir)lib\imgui;$(SolutionDir)lib\imgui-sfml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -181,6 +182,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)lib\SFML-3.0.0\include;$(SolutionDir)lib\imgui;$(SolutionDir)lib\imgui-sfml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -247,6 +249,9 @@
   <ItemGroup>
     <ProjectReference Include="..\AdventOfCode.Shared\AdventOfCode.Shared.vcxproj">
       <Project>{dc5db321-f9a6-4781-88b4-8cf942e6ddbc}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\AdventOfCode.Visualization\AdventOfCode.Visualization.vcxproj">
+      <Project>{3aa5da42-b8ca-4e35-86e9-7ba72232b1e7}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
