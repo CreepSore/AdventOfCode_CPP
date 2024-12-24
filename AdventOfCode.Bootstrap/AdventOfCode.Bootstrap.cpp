@@ -70,15 +70,45 @@ MenuResult showMenu()
     return {year, day};
 }
 
-PseudoRenderable<std::tuple<bool, AocRegistry*, BaseWindow*>> constructRenderable(AocRegistry& registry, BaseWindow& window)
+PseudoRenderable<std::tuple<AocRegistry*, BaseWindow*, VectorLogger*>> constructRenderable(AocRegistry& registry, BaseWindow& window, VectorLogger& logger)
 {
-    auto args = std::make_tuple(true, &registry, &window);
+    auto args = std::make_tuple(
+        &registry,
+        &window,
+        &logger
+    );
 
-    return PseudoRenderable<std::tuple<bool, AocRegistry*, BaseWindow*>>([](auto thisRenderable, auto& args) {
-        AocRegistry* registry = std::get<1>(args);
-        BaseWindow* window = std::get<2>(args);
+    return PseudoRenderable<std::tuple<AocRegistry*, BaseWindow*, VectorLogger*>>([](auto thisRenderable, auto& args) {
+        AocRegistry* registry = std::get<0>(args);
+        BaseWindow* window = std::get<1>(args);
+        VectorLogger* logger = std::get<2>(args);
 
         auto viewport = ImGui::GetMainViewport();
+
+        if(logger->data.size() > 0)
+        {
+            ImGui::SetNextWindowSize(viewport->Size);
+            ImGui::SetNextWindowPos(viewport->Pos);
+
+            bool open = true;
+            ImGui::Begin("Log", &open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+
+            if(!open)
+            {
+                logger->data.clear();
+            }
+            else
+            {
+                for (auto line : logger->data)
+                {
+                    ImGui::Text(line.data());
+                }
+            }
+
+
+            ImGui::End();
+        }
+
         ImGui::SetNextWindowSize(viewport->Size);
         ImGui::SetNextWindowPos(viewport->Pos);
 
@@ -103,19 +133,35 @@ PseudoRenderable<std::tuple<bool, AocRegistry*, BaseWindow*>> constructRenderabl
             label.append(" ");
             label.append(std::to_string(day->getDay()));
 
-            ImGui::BeginDisabled(!day->getIsVisual());
+            if(day->getIsVisual())
+            {
+                ImVec4 old = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, old.z, 0, old.w));
+            }
+
             if (ImGui::Button(label.data(), ImVec2(ImGui::GetContentRegionAvail().x - 100, 0)))
             {
+                if (day->getIsVisual())
+                {
+                    window->removeRenderable(thisRenderable);
+                    ImGui::PopStyleColor();
+                }
+
                 // We have to end here because days also render stuff
-                ImGui::EndDisabled();
                 ImGui::End();
                 ImGui::EndFrame();
-                window->removeRenderable(thisRenderable);
 
                 registry->runDay(day, window);
+
                 return;
             }
-            ImGui::EndDisabled();
+
+            if (day->getIsVisual())
+            {
+                ImGui::PopStyleColor();
+            }
+
+            //ImGui::EndDisabled();
 
             ImGui::SameLine();
             ImGui::PushID(std::format("?{}", day->getId()).data());
@@ -254,11 +300,11 @@ int main(int argc, char* argv[])
         auto window = BaseWindow(title);
         ImGui::GetIO().IniFilename = nullptr;
 
-        auto renderable = constructRenderable(registry, window);
-        window.addRenderable(&renderable);
+        auto renderable = constructRenderable(registry, window, vectorLogger);
 
         while(window.window != nullptr)
         {
+            window.addRenderable(&renderable);
             window.tickOnce();
         }
     }

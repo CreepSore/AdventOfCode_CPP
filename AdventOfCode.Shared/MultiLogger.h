@@ -6,12 +6,18 @@
 class MultiLogger : public ILogger
 {
 private:
-    std::vector<ILogger*> loggers;
+    std::set<ILogger*> loggers;
 
 public:
     MultiLogger* appendLogger(ILogger* logger)
     {
-        this->loggers.push_back(logger);
+        this->loggers.insert(logger);
+        return this;
+    }
+
+    MultiLogger* removeLogger(ILogger* logger)
+    {
+        this->loggers.erase(logger);
         return this;
     }
 

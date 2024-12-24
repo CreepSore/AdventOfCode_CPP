@@ -3,7 +3,7 @@
 #include <chrono>
 
 #include "IAocDay.h"
-#include "ILogger.h"
+#include "MultiLogger.h"
 
 class AocRegistry
 {
@@ -11,7 +11,7 @@ class AocRegistry
     static std::string durationToString(std::chrono::steady_clock::duration duration);
 
 public:
-    ILogger* logger = nullptr;
+    MultiLogger* logger = nullptr;
     std::vector<IAocDay*> days;
     AocRegistry(const std::string& dataPath);
 

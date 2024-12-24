@@ -6,10 +6,10 @@
 class VectorLogger : public ILogger
 {
 public:
-    std::vector<const char*> data;
+    std::vector<std::string> data;
 
     void print(const char* message) override
     {
-        this->data.push_back(message);
+        this->data.push_back(std::string(message));
     }
 };

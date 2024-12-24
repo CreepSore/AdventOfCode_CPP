@@ -71,9 +71,9 @@ AocDayPartResult Aoc2024D01::runPart1() const
     );
 
     int result = 0;
-    int size = list1.size();
+    size_t size = list1.size();
 
-    for(unsigned int i = 0; i < size; i++)
+    for(size_t i = 0; i < size; i++)
     {
         result += abs(list1[i] - list2[i]);
     }

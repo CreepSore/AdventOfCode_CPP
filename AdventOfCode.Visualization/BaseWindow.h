@@ -24,6 +24,7 @@ public:
 
     void addRenderable(IRenderable* renderable);
     void removeRenderable(IRenderable* renderable);
+    bool hasRenderable(IRenderable* renderable) const;
 
     template <typename ArgsType = void*>
     void tickOnce(void(*onRender)(ArgsType*) = nullptr, ArgsType* args = nullptr)
@@ -56,7 +57,15 @@ public:
             onRender(args);
         }
 
-        for(IRenderable* renderable : this->renderables)
+        // We have to copy the renderables here, because the original renderable list
+        // can be modified during the render process
+        std::set<IRenderable*> _renderables;
+        for (IRenderable* renderable : this->renderables)
+        {
+            _renderables.insert(renderable);
+        }
+
+        for(IRenderable* renderable : _renderables)
         {
             renderable->render(this);
         }

@@ -80,6 +80,11 @@ void BaseWindow::removeRenderable(IRenderable* renderable)
     this->renderables.erase(renderable);
 }
 
+bool BaseWindow::hasRenderable(IRenderable* renderable) const
+{
+    return this->renderables.contains(renderable);
+}
+
 bool BaseWindow::destroyWindow()
 {
     if (this->window == nullptr) {
