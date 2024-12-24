@@ -140,7 +140,7 @@ PseudoRenderable<std::tuple<bool, AocRegistry*, BaseWindow*>> constructRenderabl
 
 int main(int argc, char* argv[])
 {
-    std::string title = std::string("OIDA");
+    std::string title = std::string("AdventOfCode - C++");
 
     enum class ArgParseModes : uint8_t
     {
@@ -238,9 +238,8 @@ int main(int argc, char* argv[])
     for (const auto aocDay : days)
     {
         bool inTimeRange = year == -1 || (aocDay->getYear() == year && (day == -1 || aocDay->getDay() == day));
-        //bool isVisual = visual == aocDay->getIsVisual();
 
-        if(inTimeRange /* && isVisual */)
+        if(inTimeRange)
         {
             registry.registerDay(aocDay);
         }
@@ -253,6 +252,8 @@ int main(int argc, char* argv[])
     else if(visual)
     {
         auto window = BaseWindow(title);
+        ImGui::GetIO().IniFilename = nullptr;
+
         auto renderable = constructRenderable(registry, window);
         window.addRenderable(&renderable);
 

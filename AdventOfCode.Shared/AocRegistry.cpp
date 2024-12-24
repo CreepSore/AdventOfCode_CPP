@@ -67,7 +67,7 @@ void AocRegistry::runDay(IAocDay* day, BaseWindow* window) const
 
     if (data == nullptr)
     {
-        this->logger->print("    No datafile found");
+        this->logger->print("  No datafile found");
         this->logger->print("");
         return;
     }
@@ -85,21 +85,21 @@ void AocRegistry::runDay(IAocDay* day, BaseWindow* window) const
     {
         results.clear();
 
-        this->logger->print(std::format("    Part {}:", i).data());
+        this->logger->print(std::format("  Part {}:", i).data());
 
         auto begin = std::chrono::steady_clock::now();
         day->run(results, i);
 
         if (results.size() == 1)
         {
-            this->logger->print(std::format("      Result: {}", results[0].result).data());
+            this->logger->print(std::format("    Result: {}", results[0].result).data());
         }
 
         std::string runtime;
         int type = 1;
         auto time = std::chrono::steady_clock::now() - begin;
 
-        this->logger->print(std::format("      Runtime: {}", AocRegistry::durationToString(time)).data());
+        this->logger->print(std::format("    Runtime: {}", AocRegistry::durationToString(time)).data());
         this->logger->print("");
     }
 

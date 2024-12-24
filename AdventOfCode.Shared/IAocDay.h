@@ -26,7 +26,8 @@ public:
     void initialize(const std::string& data, BaseWindow* window);
     void deinit();
     void handleVisual();
-    virtual void render(BaseWindow* window) override;
+    void render(BaseWindow* window) override;
+    void renderData(bool* p_open = 0, ImGuiWindowFlags flags = 0) const;
 
     virtual ~IAocDay();
     virtual void run(std::vector<AocDayPartResult>& resultList, int part = -1) = 0;

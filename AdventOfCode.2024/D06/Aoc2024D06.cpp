@@ -30,35 +30,64 @@ void Aoc2024D06::renderPart1()
     ImGui::PushID("Grid");
     ImGui::Begin(title.data(), 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse);
 
+    ImVec2 dataPos;
+    ImVec2 dataSize;
+
     {
         ImGui::BeginChild("Controls", ImVec2(ImGui::GetContentRegionAvail().x, 20));
-        ImGui::PushID("PauseButton");
-        if (ImGui::Button(this->part1RenderData->paused ? "Resume" : "Pause", ImVec2(100, 20)))
-        {
-            this->part1RenderData->paused = !this->part1RenderData->paused;
-            this->part1RenderData->changed = true;
-        }
-        ImGui::PopID();
 
-        ImGui::SameLine();
-        if (ImGui::Button("Skip", ImVec2(200, 20)))
+        if (ImGui::Button("Data"))
         {
-            this->part1RenderData->skip = !this->part1RenderData->skip;
-            this->part1RenderData->changed = true;
+            this->dataVisible = !this->dataVisible;
 
+            if(this->dataVisible)
+            {
+                ImGui::SetNextWindowFocus();
+            }
         }
 
-        ImGui::SameLine();
-        if (ImGui::SliderInt("Steps", &this->part1RenderData->stepConfig, 1, 1000))
+        if (this->dataVisible)
         {
-            this->part1RenderData->stepConfig = std::max(this->part1RenderData->stepConfig - (this->part1RenderData->stepConfig % 10), 1);
+            ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, 20));
+            ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, ImGui::GetContentRegionAvail().y));
+            this->renderData(&this->dataVisible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
         }
 
-        ImGui::SameLine();
-        if (ImGui::Button("Step", ImVec2(100, 20)))
         {
-            this->part1RenderData->step = this->part1RenderData->stepConfig;
-            this->part1RenderData->changed = true;
+            ImGui::SameLine();
+            ImGui::PushID("PauseButton");
+            if (ImGui::Button(this->part1RenderData->paused ? "Resume" : "Pause"))
+            {
+                this->part1RenderData->paused = !this->part1RenderData->paused;
+                this->part1RenderData->changed = true;
+            }
+            ImGui::PopID();
+        }
+
+        {
+            ImGui::SameLine();
+            if (ImGui::Button("Skip"))
+            {
+                this->part1RenderData->skip = !this->part1RenderData->skip;
+                this->part1RenderData->changed = true;
+            }
+        }
+
+        {
+            ImGui::SameLine();
+            if (ImGui::SliderInt("Steps", &this->part1RenderData->stepConfig, 1, 1000))
+            {
+                this->part1RenderData->stepConfig = std::max(this->part1RenderData->stepConfig - (this->part1RenderData->stepConfig % 10), 1);
+            }
+        }
+
+        {
+            ImGui::SameLine();
+            if (ImGui::Button("Step", ImVec2(100, 20)))
+            {
+                this->part1RenderData->step = this->part1RenderData->stepConfig;
+                this->part1RenderData->changed = true;
+            }
         }
 
         ImGui::EndChild();

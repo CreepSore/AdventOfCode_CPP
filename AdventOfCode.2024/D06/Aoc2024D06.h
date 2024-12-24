@@ -7,6 +7,8 @@
 class Aoc2024D06 : public IAocDay
 {
 private:
+    bool dataVisible = false;
+
     struct TraverseResult
     {
         bool looping;
