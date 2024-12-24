@@ -87,11 +87,24 @@ PseudoRenderable<std::tuple<AocRegistry*, BaseWindow*, VectorLogger*>> construct
 
         if(logger->data.size() > 0)
         {
+            ImGui::SetNextWindowFocus();
             ImGui::SetNextWindowSize(viewport->Size);
             ImGui::SetNextWindowPos(viewport->Pos);
 
             bool open = true;
-            ImGui::Begin("Log", &open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin(
+                "Log",
+                &open,
+                ImGuiWindowFlags_NoSavedSettings
+                | ImGuiWindowFlags_NoMove
+                | ImGuiWindowFlags_NoCollapse
+                | ImGuiWindowFlags_NoResize
+            );
+
+            if (ImGui::Button("Close", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+            {
+                logger->data.clear();
+            }
 
             if(!open)
             {
@@ -105,14 +118,20 @@ PseudoRenderable<std::tuple<AocRegistry*, BaseWindow*, VectorLogger*>> construct
                 }
             }
 
-
             ImGui::End();
         }
 
         ImGui::SetNextWindowSize(viewport->Size);
         ImGui::SetNextWindowPos(viewport->Pos);
 
-        if (!ImGui::Begin("Run Day", 0, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse))
+        if (!ImGui::Begin(
+            "Run Day",
+            0,
+            ImGuiWindowFlags_NoSavedSettings
+            | ImGuiWindowFlags_NoMove
+            | ImGuiWindowFlags_NoCollapse
+            | ImGuiWindowFlags_NoResize
+        ))
         {
             ImGui::End();
             return;
