@@ -25,6 +25,7 @@ BaseWindow::BaseWindow(
         this->window = new sf::RenderWindow(sf::VideoMode(sf::Vector2u(1000, 1000)), title);
 
         ImGui::SFML::Init(*this->window);
+        ImGui::GetIO().IniFilename = nullptr;
 
         if(standalone)
         {

@@ -18,109 +18,244 @@
 
 #define IMGUI_USER_CONFIG "imgui_config.h"
 
-struct MenuResult
+class AdventOfCode : IRenderable
 {
-    int year;
-    int day;
-
-    MenuResult(const int year, const int day)
+public:
+    struct StartParameters
     {
-        this->year = year;
-        this->day = day;
+        std::string basedir;
+        bool benchmark = false;
+        bool interactive = false;
+        bool visual = false;
+        int day = -1;
+        int year = -1;
+    };
+
+private:
+    struct MenuResult
+    {
+        int year;
+        int day;
+
+        MenuResult(const int year, const int day)
+        {
+            this->year = year;
+            this->day = day;
+        }
+    };
+
+    std::map<uint16_t, std::vector<IAocDay*>>* groupedDays = nullptr;
+    std::map<uint32_t, std::vector<AocDayPartResult>> results;
+
+    bool init = true;
+    bool logViewerOpen = false;
+    bool resultViewOpen = false;
+    bool demoOpen = false;
+    bool demoWasOpen = false;
+    bool allChecked = false;
+    bool anyChecked = false;
+    bool runVisual = false;
+    std::map<uint32_t, bool> checkedDays;
+    StartParameters startParameters;
+
+    void updateChecked()
+    {
+        for(IAocDay* day : this->registry->days)
+        {
+            if(!this->checkedDays[day->getId()])
+            {
+                allChecked = false;
+                break;
+            }
+
+            allChecked = true;
+        }
+
+        for (IAocDay* day : this->registry->days)
+        {
+            if (this->checkedDays[day->getId()])
+            {
+                anyChecked = true;
+                break;
+            }
+
+            anyChecked = false;
+        }
     }
-};
 
-MenuResult showMenu()
-{
-    int year = -1;
-    int day = -1;
-    std::string result;
+public:
+    AocRegistry* registry = nullptr;
+    BaseWindow* baseWindow = nullptr;
+    MultiLogger* multiLogger = nullptr;
+    VectorLogger* vectorLogger = nullptr;
 
-    do
+    explicit AdventOfCode(StartParameters& startParameters)
     {
-        std::cout << "Hello plsplsplspls input Year:\n> ";
+        this->startParameters = startParameters;
+        this->registry = new AocRegistry(startParameters.basedir);
+
+        this->multiLogger = new MultiLogger();
+        this->vectorLogger = new VectorLogger();
+        StdoutLogger* stdoutLogger = new StdoutLogger();
+
+        multiLogger->appendLogger(stdoutLogger);
+        multiLogger->appendLogger(vectorLogger);
+        registry->logger = multiLogger;
+    }
+
+    ~AdventOfCode() override
+    {
+        delete this->registry;
+        delete this->multiLogger;
+        delete this->groupedDays;
+        delete this->baseWindow;
+    }
+
+    MenuResult showMenu()
+    {
+        int year = -1;
+        int day = -1;
+        std::string result;
+
+        do
+        {
+            std::cout << "Hello plsplsplspls input Year:\n> ";
+            try
+            {
+                std::getline(std::cin, result);
+                year = std::stoi(result);
+            }
+            catch (...)
+            {
+                year = static_cast<int>(
+                    std::chrono::year_month_day{ time_point_cast<std::chrono::days>(std::chrono::system_clock::now()) }
+                    .year()
+                    );
+
+                std::cout << std::to_string(year) << '\n';
+            }
+        } while (year == -1);
+
+        std::cout << "\nHello plsplsplspls input Day:\n> ";
         try
         {
             std::getline(std::cin, result);
-            year = std::stoi(result);
+            day = std::stoi(result);
         }
-        catch(...)
+        catch (...)
         {
-            year = static_cast<int>(
-                std::chrono::year_month_day{time_point_cast<std::chrono::days>(std::chrono::system_clock::now())}
-                    .year()
-            );
-
-            std::cout << std::to_string(year) << '\n';
+            day = -1;
         }
-    } while (year == -1);
 
-    std::cout << "\nHello plsplsplspls input Day:\n> ";
-    try
-    {
-        std::getline(std::cin, result);
-        day = std::stoi(result);
-    }
-    catch(...)
-    {
-        day = -1;
+        return { year, day };
     }
 
-    return {year, day};
-}
+    void run()
+    {
+        if (startParameters.interactive)
+        {
+            auto menuData = showMenu();
+            startParameters.year = menuData.year;
+            startParameters.day = menuData.day;
+        }
 
-PseudoRenderable<
-    std::tuple<
-        bool,
-        AocRegistry*,
-        BaseWindow*,
-        VectorLogger*,
-        std::map<uint16_t, std::vector<IAocDay*>>*
-    >
-> constructRenderable(
-    AocRegistry& registry,
-    BaseWindow& window,
-    VectorLogger& logger,
-    std::map<uint16_t, std::vector<IAocDay*>>& days
-)
-{
-    auto args = std::make_tuple(
-        true,
-        &registry,
-        &window,
-        &logger,
-        &days
-    );
+        const std::vector<IAocDay*> days = {
+            new Aoc2024D01(),
+            new Aoc2024D02(),
+            new Aoc2024D03(),
+            new Aoc2024D04(),
+            new Aoc2024D05(),
+            new Aoc2024D06(),
+            new Aoc2024D07(),
+        };
 
-    return PseudoRenderable<
-        std::tuple<
-            bool,
-            AocRegistry*,
-            BaseWindow*,
-            VectorLogger*,
-            std::map<uint16_t, std::vector<IAocDay*>>*
-        >
-    >([](auto thisRenderable, auto& args) {
-        bool init = std::get<0>(args);
-        AocRegistry* registry = std::get<1>(args);
-        BaseWindow* window = std::get<2>(args);
-        VectorLogger* logger = std::get<3>(args);
-        std::map<uint16_t, std::vector<IAocDay*>>* days = std::get<4>(args);
+        for (const auto aocDay : days)
+        {
+            bool inTimeRange = startParameters.year == -1
+                || (aocDay->getYear() == startParameters.year
+                    && (startParameters.day == -1 || aocDay->getDay() == startParameters.day)
+                );
 
-        std::get<0>(args) = false;
+            if (inTimeRange)
+            {
+                registry->registerDay(aocDay);
+                this->checkedDays[aocDay->getId()] = false;
+            }
+        }
+
+        if (startParameters.benchmark)
+        {
+            registry->runBenchmark();
+        }
+        else if (startParameters.visual)
+        {
+            this->runVisual = true;
+            std::string title("AdventOfCode - C++");
+
+            delete this->baseWindow;
+            this->baseWindow = new BaseWindow(title);
+
+            delete this->groupedDays;
+            this->groupedDays = new std::map<uint16_t, std::vector<IAocDay*>>();
+            
+            for (auto aocDay : registry->days)
+            {
+                (*this->groupedDays)[aocDay->getYear()].push_back(aocDay);
+            }
+
+            while (this->baseWindow->window != nullptr)
+            {
+                this->baseWindow->addRenderable(this);
+                this->baseWindow->tickOnce();
+            }
+        }
+        else
+        {
+            this->results = registry->run();
+        }
+
+        for (auto value : days)
+        {
+            delete value;
+        }
+    }
+
+    void render(BaseWindow* window) override
+    {
+        updateChecked();
+
+        bool init = this->init;
+        this->init = false;
+
+        if (ImGui::IsKeyPressed(ImGuiKey_Insert, false))
+        {
+            this->demoOpen = !this->demoOpen;
+        }
+
+        if(this->demoOpen)
+        {
+            if(!this->demoWasOpen)
+            {
+                ImGui::SetNextWindowFocus();
+            }
+
+            ImGui::ShowDemoWindow(&this->demoOpen);
+        }
+
+        this->demoWasOpen = this->demoOpen;
+
 
         auto viewport = ImGui::GetMainViewport();
 
-        if(logger->data.size() > 0)
+        if (logViewerOpen)
         {
             ImGui::SetNextWindowFocus();
             ImGui::SetNextWindowSize(viewport->Size);
             ImGui::SetNextWindowPos(viewport->Pos);
 
-            bool open = true;
             ImGui::Begin(
                 "Log",
-                &open,
+                0,
                 ImGuiWindowFlags_NoSavedSettings
                 | ImGuiWindowFlags_NoMove
                 | ImGuiWindowFlags_NoCollapse
@@ -129,21 +264,115 @@ PseudoRenderable<
 
             if (ImGui::Button("Close", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
             {
-                logger->data.clear();
+                logViewerOpen = false;
+                this->vectorLogger->data.clear();
             }
 
-            if(!open)
+            if(logViewerOpen)
             {
-                logger->data.clear();
-            }
-            else
-            {
-                for (auto line : logger->data)
+                for (auto line : this->vectorLogger->data)
                 {
                     ImGui::Text(line.data());
                 }
             }
 
+            ImGui::End();
+        }
+
+        if (resultViewOpen && !logViewerOpen)
+        {
+            ImGui::SetNextWindowFocus();
+            ImGui::SetNextWindowSize(viewport->Size);
+            ImGui::SetNextWindowPos(viewport->Pos);
+
+            ImGui::Begin(
+                "Results",
+                0,
+                ImGuiWindowFlags_NoSavedSettings
+                | ImGuiWindowFlags_NoMove
+                | ImGuiWindowFlags_NoCollapse
+                | ImGuiWindowFlags_NoResize
+            );
+
+            if (ImGui::Button("Close", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+            {
+                resultViewOpen = false;
+            }
+
+            int columns = 2;
+            int currentColumn = 0;
+            float availableX = ImGui::GetContentRegionAvail().x / columns;
+            std::vector<float> plotting;
+
+            for(auto day : this->results)
+            {
+                std::string label = std::format("{} {}", day.first >> 8, day.first & 0xFF);
+
+                ImGui::BeginChild(label.data(), ImVec2(availableX, 125), ImGuiChildFlags_Border);
+                ImGui::Text(label.data());
+
+                if(day.second.size() > 0)
+                {
+                    float partSizeX = ImGui::GetContentRegionAvail().x / day.second.size();
+
+                    int part = 1;
+                    for(int i = 0; i < day.second.size(); i++)
+                    {
+                        auto partResult = day.second[i];
+                        std::string partLabel = std::format("Part {}", part);
+
+                        ImGui::BeginChild(partLabel.data(), ImVec2(partSizeX, 0));
+                        ImGui::Text(partLabel.data());
+                        ImGui::Text("Result: ");
+                        ImGui::SameLine();
+                        ImGui::TextColored(ImVec4(0, 1, 0, 1), std::to_string(partResult.result).data());
+                        ImGui::SameLine();
+
+                        if(ImGui::Button("Copy"))
+                        {
+                            ImGui::SetClipboardText(std::to_string(partResult.result).data());
+                        }
+
+                        ImGui::Text(std::format("Runtime: {}", durationToString(partResult.duration)).data());
+
+                        ImGui::EndChild();
+
+                        if(i != day.second.size() - 1)
+                        {
+                            ImGui::SameLine();
+                        }
+
+                        part += 1;
+                        plotting.push_back(static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(partResult.duration).count()));
+                    }
+                }
+
+                ImGui::EndChild();
+
+                if (currentColumn++ != columns)
+                {
+                    ImGui::SameLine();
+                }
+                else
+                {
+                    currentColumn = 0;
+                }
+            }
+
+            ImGui::NewLine();
+
+            ImGui::PushID("Histogram");
+            ImGui::PlotHistogram(
+                "",
+                plotting.data(),
+                plotting.size(),
+                0,
+                "Runtimes us",
+                0,
+                100000,
+                ImVec2(ImGui::GetContentRegionAvail().x, 500)
+            );
+            ImGui::PopID();
             ImGui::End();
         }
 
@@ -163,32 +392,96 @@ PseudoRenderable<
             return;
         }
 
-        if (ImGui::Button("All", ImVec2(ImGui::GetContentRegionAvail().x, 20)))
+
+        bool allChecked = this->allChecked;
+        if (ImGui::Checkbox("All checked", &allChecked))
+        {
+            for (IAocDay* day : this->registry->days)
+            {
+                this->checkedDays[day->getId()] = allChecked;
+            }
+        }
+        ImGui::SameLine();
+        ImGui::Checkbox("Visual", &this->runVisual);
+
+        ImGui::SameLine();
+
+        ImGui::BeginDisabled(!this->anyChecked);
+        if (ImGui::Button("Run", ImVec2(ImGui::GetContentRegionAvail().x, 20)))
         {
             // We have to end here because days also render stuff
+            ImGui::EndDisabled();
             ImGui::End();
             ImGui::EndFrame();
-            window->removeRenderable(thisRenderable);
+            window->removeRenderable(this);
 
-            registry->run(window);
+            this->results.clear();
+
+            for(auto day : this->registry->days)
+            {
+                if(checkedDays[day->getId()])
+                {
+                    if(this->runVisual)
+                    {
+                        this->results[day->getId()] = this->registry->runDay(day, window);
+                    }
+                    else
+                    {
+                        this->results[day->getId()] = this->registry->runDay(day, nullptr);
+                    }
+                }
+            }
+
+            logViewerOpen = this->vectorLogger->data.size() > 0;
+            resultViewOpen = true;
+
             return;
         }
+        ImGui::EndDisabled();
 
-        for(auto year : *days)
+        for (auto year : *this->groupedDays)
         {
-            if(init)
+            if (init)
             {
-                ImGui::SetNextItemOpen(true);
+                if(year.first == static_cast<int>(
+                    std::chrono::year_month_day{
+                        time_point_cast<std::chrono::days>(std::chrono::system_clock::now())
+                    }.year()
+                ))
+                {
+                    ImGui::SetNextItemOpen(true);
+                }
             }
 
             if (ImGui::TreeNode(std::to_string(year.first).data()))
             {
+                bool allCheckedDay = true;
+                for(IAocDay* day : year.second)
+                {
+                    if(!this->checkedDays[day->getId()])
+                    {
+                        allCheckedDay = false;
+                        break;
+                    }
+                }
+
+                if (ImGui::Checkbox("All", &allCheckedDay))
+                {
+                    for (IAocDay* day : year.second)
+                    {
+                        this->checkedDays[day->getId()] = allCheckedDay;
+                    }
+                }
+
                 for (auto day : year.second)
                 {
-                    std::string label;
-                    label.append(std::to_string(day->getYear()));
-                    label.append(" ");
-                    label.append(std::to_string(day->getDay()));
+                    std::string label = std::format("{} {}", day->getYear(), day->getDay());
+
+                    ImGui::PushID(std::format("{}{}Checked", day->getYear(), day->getDay()).data());
+                    ImGui::Checkbox("", &this->checkedDays[day->getId()]);
+                    ImGui::PopID();
+
+                    ImGui::SameLine();
 
                     if (day->getIsVisual())
                     {
@@ -200,7 +493,7 @@ PseudoRenderable<
                     {
                         if (day->getIsVisual())
                         {
-                            window->removeRenderable(thisRenderable);
+                            window->removeRenderable(this);
                             ImGui::PopStyleColor();
                         }
 
@@ -209,7 +502,10 @@ PseudoRenderable<
                         ImGui::End();
                         ImGui::EndFrame();
 
-                        registry->runDay(day, window);
+                        this->results.clear();
+                        this->results[day->getId()] = registry->runDay(day, window);
+                        logViewerOpen = this->vectorLogger->data.size() > 0;
+                        resultViewOpen = true;
 
                         return;
                     }
@@ -220,6 +516,7 @@ PseudoRenderable<
                     }
 
                     ImGui::SameLine();
+
                     ImGui::PushID(std::format("?{}", day->getId()).data());
                     if (ImGui::Button("?", ImVec2(ImGui::GetContentRegionAvail().x / 2, 0)))
                     {
@@ -241,8 +538,8 @@ PseudoRenderable<
         }
 
         ImGui::End();
-    }, args);
-}
+    }
+};
 
 int main(int argc, char* argv[])
 {
@@ -256,12 +553,7 @@ int main(int argc, char* argv[])
         YEAR=3
     };
 
-    std::string basedir;
-    bool benchmark = false;
-    bool interactive = false;
-    bool visual = false;
-    int day = -1;
-    int year = -1;
+    AdventOfCode::StartParameters startParameters;
     ArgParseModes parseMode = ArgParseModes::NONE;
 
     for(int i = 1; i < argc; i++)
@@ -273,15 +565,15 @@ int main(int argc, char* argv[])
         case ArgParseModes::NONE:
             if (arg == "-benchmark")
             {
-                benchmark = true;
+                startParameters.benchmark = true;
             }
             else if (arg == "-int")
             {
-                interactive = true;
+                startParameters.interactive = true;
             }
             else if (arg == "-vis")
             {
-                visual = true;
+                startParameters.visual = true;
             }
             else if (arg == "-basedir")
             {
@@ -299,89 +591,22 @@ int main(int argc, char* argv[])
             break;
 
         case ArgParseModes::BASEDIR:
-            basedir = arg;
+            startParameters.basedir = arg;
             parseMode = ArgParseModes::NONE;
             break;
 
         case ArgParseModes::DAY:
-            day = std::stoi(arg);
+            startParameters.day = std::stoi(arg);
             parseMode = ArgParseModes::NONE;
             break;
 
         case ArgParseModes::YEAR:
-            year = std::stoi(arg);
+            startParameters.year = std::stoi(arg);
             parseMode = ArgParseModes::NONE;
             break;
         }
     }
 
-    if(interactive)
-    {
-        auto menuData = showMenu();
-        year = menuData.year;
-        day = menuData.day;
-    }
-
-    const std::vector<IAocDay*> days = {
-        new Aoc2024D01(),
-        new Aoc2024D02(),
-        new Aoc2024D03(),
-        new Aoc2024D04(),
-        new Aoc2024D05(),
-        new Aoc2024D06(),
-        new Aoc2024D07(),
-    };
-
-    AocRegistry registry = AocRegistry(std::string(basedir));
-    MultiLogger multiLogger;
-    StdoutLogger stdoutLogger;
-    VectorLogger vectorLogger;
-
-    multiLogger.appendLogger(&stdoutLogger);
-    multiLogger.appendLogger(&vectorLogger);
-    registry.logger = &multiLogger;
-
-    for (const auto aocDay : days)
-    {
-        bool inTimeRange = year == -1 || (aocDay->getYear() == year && (day == -1 || aocDay->getDay() == day));
-
-        if(inTimeRange)
-        {
-            registry.registerDay(aocDay);
-        }
-    }
-
-    if(benchmark)
-    {
-        registry.runBenchmark();
-    }
-    else if(visual)
-    {
-        auto window = BaseWindow(title);
-        ImGui::GetIO().IniFilename = nullptr;
-
-        std::map<uint16_t, std::vector<IAocDay*>> yearDayMapping;
-
-        for(auto aocDay : registry.days)
-        {
-            yearDayMapping[aocDay->getYear()].push_back(aocDay);
-        }
-
-        auto renderable = constructRenderable(registry, window, vectorLogger, yearDayMapping);
-
-        while(window.window != nullptr)
-        {
-            window.addRenderable(&renderable);
-            window.tickOnce();
-        }
-    }
-    else
-    {
-        registry.run();
-    }
-
-    for (auto value : days)
-    {
-        delete value;
-    }
+    AdventOfCode adventOfCode(startParameters);
+    adventOfCode.run();
 }

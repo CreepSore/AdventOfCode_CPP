@@ -16,3 +16,28 @@ inline void openBrowser(const char* url)
     system(std::format("xdg-open {}", url).data());
 #endif
 }
+
+inline std::string durationToString(const std::chrono::steady_clock::duration duration)
+{
+    const char* runtimeStamps[] = { " ns", " us", " ms" };
+
+    int type = 0;
+    unsigned long long runtime = duration.count();
+
+    if (runtime >= 100000)
+    {
+        runtime = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+        type = 1;
+
+        if (runtime >= 100000)
+        {
+            runtime = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+            type = 2;
+        }
+    }
+
+    std::string result = std::to_string(runtime);
+    result.append(runtimeStamps[type]);
+
+    return result;
+}

@@ -6,6 +6,8 @@
 #include <fstream>
 #include <filesystem>
 
+#include "utils.h"
+
 AocRegistry::AocRegistry(const std::string& dataPath)
 {
     this->dataPath = dataPath;
@@ -34,24 +36,35 @@ std::string* AocRegistry::loadData(const uint16_t year, const uint8_t day) const
     return result;
 }
 
-void AocRegistry::run() const
+std::map<uint32_t, std::vector<AocDayPartResult>> AocRegistry::run() const
 {
+    std::map<uint32_t, std::vector<AocDayPartResult>> result;
+
     for (auto day : this->days)
     {
-        this->runDay(day);
+        result[day->getId()] = this->runDay(day);
     }
+
+    return result;
 }
 
-void AocRegistry::run(BaseWindow* window) const
+std::map<uint32_t, std::vector<AocDayPartResult>> AocRegistry::run(BaseWindow* window) const
 {
+    std::map<uint32_t, std::vector<AocDayPartResult>> result;
+
     for (auto day : this->days)
     {
-        this->runDay(day, window);
+        result[day->getId()] = this->runDay(day, window);
     }
+
+    return result;
 }
 
-void AocRegistry::runDay(IAocDay* day, BaseWindow* window) const
+std::vector<AocDayPartResult> AocRegistry::runDay(IAocDay* day, BaseWindow* window) const
 {
+    std::vector<AocDayPartResult> allResults;
+    std::vector<AocDayPartResult> results;
+
     auto sDay = std::to_string(day->getDay());
 
     if (sDay.length() == 1)
@@ -61,14 +74,13 @@ void AocRegistry::runDay(IAocDay* day, BaseWindow* window) const
 
     this->logger->print(std::format("Running [{}/{}]:", day->getYear(), sDay).data());
 
-    std::vector<AocDayPartResult> results;
     const std::string* data = this->loadData(day->getYear(), day->getDay());
 
     if (data == nullptr)
     {
         this->logger->print("  No datafile found");
         this->logger->print("");
-        return;
+        return allResults;
     }
 
     if(window == nullptr)
@@ -89,22 +101,29 @@ void AocRegistry::runDay(IAocDay* day, BaseWindow* window) const
         auto begin = std::chrono::steady_clock::now();
         day->run(results, i);
 
-        if (results.size() == 1)
+        std::string runtime;
+        auto time = std::chrono::steady_clock::now() - begin;
+
+        if (results.size() > 0)
         {
+            for(size_t i = 0; i < results.size(); i++)
+            {
+                results[i].duration = time;
+                allResults.push_back(results[i]);
+            }
+
             this->logger->print(std::format("    Result: {}", results[0].result).data());
         }
 
-        std::string runtime;
-        int type = 1;
-        auto time = std::chrono::steady_clock::now() - begin;
 
-        this->logger->print(std::format("    Runtime: {}", AocRegistry::durationToString(time)).data());
+        this->logger->print(std::format("    Runtime: {}", durationToString(time)).data());
         this->logger->print("");
     }
 
     this->logger->print("");
-
     delete data;
+
+    return allResults;
 }
 
 void AocRegistry::runBenchmark() const
@@ -197,13 +216,13 @@ void AocRegistry::runBenchmark() const
                     << std::to_string(benchmark)
                     << "x = "
                     << std::setw(8)
-                    << AocRegistry::durationToString(min)
+                    << durationToString(min)
                     << " MIN   "
                     << std::setw(8)
-                    << AocRegistry::durationToString(max)
+                    << durationToString(max)
                     << " MAX   "
                     << std::setw(8)
-                    << AocRegistry::durationToString(avg)
+                    << durationToString(avg)
                     << " AVG\n";
             }
         }
@@ -213,29 +232,3 @@ void AocRegistry::runBenchmark() const
         delete data;
     }
 }
-
-std::string AocRegistry::durationToString(const std::chrono::steady_clock::duration duration)
-{
-    const char* runtimeStamps[] = {" ns", " us", " ms"};
-
-    int type = 0;
-    unsigned long long runtime = duration.count();
-
-    if (runtime >= 100000)
-    {
-        runtime = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
-        type = 1;
-
-        if (runtime >= 100000)
-        {
-            runtime = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-            type = 2;
-        }
-    }
-
-    std::string result = std::to_string(runtime);
-    result.append(runtimeStamps[type]);
-
-    return result;
-}
-

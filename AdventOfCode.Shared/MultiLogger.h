@@ -9,6 +9,14 @@ private:
     std::set<ILogger*> loggers;
 
 public:
+    ~MultiLogger()
+    {
+        for(auto logger : this->loggers)
+        {
+            delete logger;
+        }
+    }
+
     MultiLogger* appendLogger(ILogger* logger)
     {
         this->loggers.insert(logger);

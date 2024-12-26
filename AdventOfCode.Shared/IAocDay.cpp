@@ -35,6 +35,7 @@ uint32_t IAocDay::getId() const
 void IAocDay::initialize(const std::string& data)
 {
     this->data = new std::string(data);
+    this->window = nullptr;
 }
 
 void IAocDay::initialize(const std::string& data, BaseWindow* window)
