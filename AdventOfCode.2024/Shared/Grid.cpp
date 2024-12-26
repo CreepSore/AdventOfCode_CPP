@@ -16,8 +16,7 @@ Grid::~Grid()
 
 void Grid::addNode(GridNode* node)
 {
-    uint16_t hash = node->position.getHash();
-    this->nodes[hash] = node;
+    this->nodes[node->position.hash] = node;
 
     this->height = std::max(this->height, static_cast<uint8_t>(node->position.y + 1));
     this->width = std::max(this->width, static_cast<uint8_t>(node->position.x + 1));
@@ -25,14 +24,12 @@ void Grid::addNode(GridNode* node)
 
 GridNode* Grid::getNodeAt(const Vec2& offset)
 {
-    uint16_t posHash = offset.getHash();
-
-    if(!this->nodes.contains(posHash))
+    if(!this->nodes.contains(offset.hash))
     {
         return nullptr;
     }
 
-    return this->nodes[posHash];
+    return this->nodes.at(offset.hash);
 }
 
 std::vector<GridNode*> Grid::getNeighbors(const GridNode& node)

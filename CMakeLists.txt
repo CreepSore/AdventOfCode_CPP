@@ -53,7 +53,7 @@ add_executable(
     AdventOfCode.2024/D05/Aoc2024D05.cpp
     AdventOfCode.2024/D06/Aoc2024D06.cpp
     AdventOfCode.2024/D07/Aoc2024D07.cpp
-)
+ "AdventOfCode.Bootstrap/MenuView.h")
 
 target_link_libraries(
     main

@@ -123,7 +123,7 @@ void Aoc2024D06::render(BaseWindow* window)
                     case '.':
                         color = ImVec4(0.6, 0.6, 0.6, 1);
 
-                        if (this->renderArgs->inVisitedPositions->contains(node->position.getHash()))
+                        if (this->renderArgs->inVisitedPositions->contains(node->position.hash))
                         {
                             color = ImVec4(0, 1, 0, 1);
                         }
@@ -163,10 +163,10 @@ void Aoc2024D06::render(BaseWindow* window)
 AocDayPartResult Aoc2024D06::runPart1()
 {
     static std::map<uint16_t, Vec2> rotation = {
-        { Vec2::VEC_UP.getHash(), Vec2::VEC_RIGHT },
-        { Vec2::VEC_RIGHT.getHash(), Vec2::VEC_DOWN },
-        { Vec2::VEC_DOWN.getHash(), Vec2::VEC_LEFT },
-        { Vec2::VEC_LEFT.getHash(), Vec2::VEC_UP }
+        { Vec2::VEC_UP.hash, Vec2::VEC_RIGHT },
+        { Vec2::VEC_RIGHT.hash, Vec2::VEC_DOWN },
+        { Vec2::VEC_DOWN.hash, Vec2::VEC_LEFT },
+        { Vec2::VEC_LEFT.hash, Vec2::VEC_UP }
     };
 
     int result = 0;
@@ -195,10 +195,10 @@ AocDayPartResult Aoc2024D06::runPart1()
 AocDayPartResult Aoc2024D06::runPart2()
 {
     static std::map<uint16_t, Vec2> rotation = {
-        { Vec2::VEC_UP.getHash(), Vec2::VEC_RIGHT },
-        { Vec2::VEC_RIGHT.getHash(), Vec2::VEC_DOWN },
-        { Vec2::VEC_DOWN.getHash(), Vec2::VEC_LEFT },
-        { Vec2::VEC_LEFT.getHash(), Vec2::VEC_UP }
+        { Vec2::VEC_UP.hash, Vec2::VEC_RIGHT },
+        { Vec2::VEC_RIGHT.hash, Vec2::VEC_DOWN },
+        { Vec2::VEC_DOWN.hash, Vec2::VEC_LEFT },
+        { Vec2::VEC_LEFT.hash, Vec2::VEC_UP }
     };
 
     int result = 0;
@@ -244,10 +244,10 @@ Aoc2024D06::TraverseResult Aoc2024D06::traverseGrid(
     result.visited = 1;
 
     static std::map<uint16_t, Vec2> rotation = {
-        { Vec2::VEC_UP.getHash(), Vec2::VEC_RIGHT },
-        { Vec2::VEC_RIGHT.getHash(), Vec2::VEC_DOWN },
-        { Vec2::VEC_DOWN.getHash(), Vec2::VEC_LEFT },
-        { Vec2::VEC_LEFT.getHash(), Vec2::VEC_UP }
+        { Vec2::VEC_UP.hash, Vec2::VEC_RIGHT },
+        { Vec2::VEC_RIGHT.hash, Vec2::VEC_DOWN },
+        { Vec2::VEC_DOWN.hash, Vec2::VEC_LEFT },
+        { Vec2::VEC_LEFT.hash, Vec2::VEC_UP }
     };
 
     std::set<uint16_t> visitedPositions;
@@ -298,8 +298,8 @@ Aoc2024D06::TraverseResult Aoc2024D06::traverseGrid(
             }
         }
 
-        const uint16_t currentPosHash = currentNode->position.getHash();
-        const uint16_t currentDirHash = currentDirection.getHash();
+        const uint16_t currentPosHash = currentNode->position.hash;
+        const uint16_t currentDirHash = currentDirection.hash;
         const uint32_t mergedHash = (currentPosHash << 16 | currentDirHash);
 
         if (visited->contains(mergedHash))
@@ -325,7 +325,7 @@ Aoc2024D06::TraverseResult Aoc2024D06::traverseGrid(
             continue;
         }
 
-        if(depth > 0 && !visitedPositions.contains(nextNode->position.getHash()))
+        if(depth > 0 && !visitedPositions.contains(nextNode->position.hash))
         {
             const char oldValue = nextNode->value;
             nextNode->value = '#';

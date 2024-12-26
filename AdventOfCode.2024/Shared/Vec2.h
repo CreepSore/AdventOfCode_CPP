@@ -5,13 +5,17 @@
 
 struct Vec2
 {
+    uint16_t hash;
     uint8_t x;
     uint8_t y;
 
     Vec2();
     Vec2(const Vec2& obj);
     Vec2(uint8_t x, uint8_t y);
-    uint16_t getHash() const;
+
+    uint16_t getHash() const {
+        return this->hash;
+    }
 
     void add(const Vec2& obj);
 

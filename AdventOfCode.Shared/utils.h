@@ -3,6 +3,7 @@
 #ifdef _WIN32
 #include <Windows.h>
 #include <shellapi.h>
+#include <debugapi.h>
 #elif unix
 #include <string>
 #include <format>
@@ -40,4 +41,14 @@ inline std::string durationToString(const std::chrono::steady_clock::duration du
     result.append(runtimeStamps[type]);
 
     return result;
+}
+
+inline bool isDebuggerPresent()
+{
+#ifdef _WIN32
+    return IsDebuggerPresent();
+#elif unix
+    // TODO
+    return false;
+#endif
 }

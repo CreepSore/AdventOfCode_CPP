@@ -4,23 +4,21 @@ Vec2::Vec2()
 {
     this->x = 0;
     this->y = 0;
+    this->hash = 0;
 }
 
 Vec2::Vec2(const Vec2& obj)
 {
     this->x = obj.x;
     this->y = obj.y;
+    this->hash = (this->x << 8) | this->y;
 }
 
 Vec2::Vec2(uint8_t x, uint8_t y)
 {
     this->x = x;
     this->y = y;
-}
-
-uint16_t Vec2::getHash() const
-{
-    return (this->x << 8) | this->y;
+    this->hash = (this->x << 8) | this->y;
 }
 
 void Vec2::add(const Vec2& obj)
