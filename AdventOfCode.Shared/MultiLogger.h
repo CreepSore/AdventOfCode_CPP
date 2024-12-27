@@ -9,7 +9,7 @@ private:
     std::set<ILogger*> loggers;
 
 public:
-    ~MultiLogger()
+    ~MultiLogger() override
     {
         for(auto logger : this->loggers)
         {

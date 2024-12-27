@@ -50,10 +50,10 @@ FetchContent_MakeAvailable(ImGui-SFML)
 
 add_executable(
     main
+    AdventOfCode.Bootstrap/AdventOfCode.Bootstrap.cpp
     ${IMPLOT_DIR}/implot.cpp
     ${IMPLOT_DIR}/implot_demo.cpp
     ${IMPLOT_DIR}/implot_items.cpp
-    AdventOfCode.Bootstrap/AdventOfCode.Bootstrap.cpp
 	AdventOfCode.Shared/AocRegistry.cpp
 	AdventOfCode.Shared/IAocDay.cpp
     AdventOfCode.Visualization/BaseWindow.cpp
@@ -73,6 +73,11 @@ target_include_directories(
     main
     PRIVATE
     ${IMPLOT_DIR}
+)
+
+target_include_directories(
+    main
+    PRIVATE
     ${IMGUI_DIR}
 )
 
