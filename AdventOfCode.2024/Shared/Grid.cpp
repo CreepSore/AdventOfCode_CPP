@@ -24,6 +24,16 @@ void Grid::addNode(GridNode* node)
 
 GridNode* Grid::getNodeAt(const Vec2& offset)
 {
+    if(offset.x < 0 || offset.y < 0 || offset.x >= this->width || offset.y >= this->height)
+    {
+        return nullptr;
+    }
+
+    if(nodesPosInitialized)
+    {
+        return nodesPos[offset.x][offset.y];
+    }
+
     if(!this->nodes.contains(offset.hash))
     {
         return nullptr;
@@ -70,6 +80,26 @@ uint8_t Grid::getWidth() const
 uint8_t Grid::getHeight() const
 {
     return this->height;
+}
+
+void Grid::fillNodesPos()
+{
+    if(!nodesPos.empty())
+    {
+        return;
+    }
+
+    for (uint8_t x = 0; x < this->width; x++)
+    {
+        std::vector<GridNode*> list;
+        for (uint8_t y = 0; y < this->height; y++)
+        {
+            list.push_back(this->getNodeAt(Vec2(x, y)));
+        }
+        nodesPos.push_back(list);
+    }
+
+    nodesPosInitialized = true;
 }
 
 std::string Grid::toString()

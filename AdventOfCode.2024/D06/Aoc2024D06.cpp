@@ -204,6 +204,7 @@ AocDayPartResult Aoc2024D06::runPart2()
     int result = 0;
 
     Grid grid = Grid::fromString(*this->data);
+    grid.fillNodesPos();
     Vec2 startPosition;
 
     for (std::pair<uint8_t, GridNode*> node : grid.nodes)
@@ -253,14 +254,6 @@ Aoc2024D06::TraverseResult Aoc2024D06::traverseGrid(
     std::set<uint16_t> visitedPositions;
     std::set<uint32_t>* visited = new std::set<uint32_t>();
 
-    if(inVisited != nullptr)
-    {
-        for (uint32_t value : *inVisited)
-        {
-            visited->insert(value);
-        }
-    }
-
     GridNode* currentNode = grid.getNodeAt(startPosition);
     Vec2 currentDirection = startDirection;
 
@@ -302,7 +295,7 @@ Aoc2024D06::TraverseResult Aoc2024D06::traverseGrid(
         const uint16_t currentDirHash = currentDirection.hash;
         const uint32_t mergedHash = (currentPosHash << 16 | currentDirHash);
 
-        if (visited->contains(mergedHash))
+        if (visited->contains(mergedHash) || (inVisited != nullptr && inVisited->contains(mergedHash)))
         {
             result.looping = true;
             break;

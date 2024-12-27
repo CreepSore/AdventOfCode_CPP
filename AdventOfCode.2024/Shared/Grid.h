@@ -18,9 +18,12 @@ class Grid
 private:
     uint8_t width = 0;
     uint8_t height = 0;
+    bool nodesPosInitialized = false;
 
 public:
     std::map<uint16_t, GridNode*> nodes;
+    std::vector<std::vector<GridNode*>> nodesPos;
+
     ~Grid();
 
     void addNode(GridNode* node);
@@ -31,6 +34,7 @@ public:
     uint8_t getWidth() const;
     uint8_t getHeight() const;
 
+    void fillNodesPos();
     std::string toString();
 
     static Grid fromString(const std::string& data);
