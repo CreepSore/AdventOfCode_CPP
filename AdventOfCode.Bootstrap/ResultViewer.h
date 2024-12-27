@@ -39,7 +39,7 @@ public:
         ImGui::EndChild();
     }
 
-    void renderDay(float availableX, std::vector<float>& plotting, std::map<uint32_t, std::vector<AocDayPartResult>>::value_type day) {
+    void renderDay(float availableX, std::vector<uint64_t>& plotting, std::map<uint32_t, std::vector<AocDayPartResult>>::value_type day) {
         std::string label = std::format("{} {}", day.first >> 8, day.first & 0xFF);
 
         ImGui::BeginChild(label.data(), ImVec2(availableX, 125), ImGuiChildFlags_Border);
@@ -61,7 +61,7 @@ public:
                 }
 
                 part += 1;
-                plotting.push_back(static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(partResult.duration).count()));
+                plotting.push_back(std::chrono::duration_cast<std::chrono::microseconds>(partResult.duration).count());
             }
         }
 
@@ -104,7 +104,7 @@ public:
         int columns = 2;
         int currentColumn = 0;
         float availableX = ImGui::GetContentRegionAvail().x / columns;
-        std::vector<float> plotting;
+        std::vector<uint64_t> plotting;
 
         for (auto day : *this->results)
         {
@@ -123,16 +123,43 @@ public:
         ImGui::NewLine();
 
         ImGui::PushID("Histogram");
-        ImGui::PlotHistogram(
-            "",
-            plotting.data(),
-            plotting.size(),
-            0,
-            "Runtimes us",
-            0,
-            100000,
-            ImVec2(ImGui::GetContentRegionAvail().x, 500)
-        );
+        ImPlot::BeginPlot("Runtime us", ImVec2(ImGui::GetContentRegionAvail().x, 500));
+        ImPlot::PlotBars("", plotting.data(), plotting.size());
+
+        int offsetX = 0;
+        for (auto& result : *this->results)
+        {
+            int partNo = 1;
+            for(auto part : result.second)
+            {
+                ImPlot::Annotation(
+                    offsetX,
+                    0,
+                    ImPlot::GetLastItemColor(),
+                    ImVec2(0, -20),
+                    false,
+                    std::format(
+                        "{}/D{:02}/P{:02}",
+                        result.first >> 8,
+                        result.first & 0xFF,
+                        partNo
+                    ).data()
+                );
+                ImPlot::Annotation(
+                    offsetX,
+                    0,
+                    ImPlot::GetLastItemColor(),
+                    ImVec2(0, -5),
+                    false,
+                    durationToString(part.duration).data()
+                );
+
+                partNo += 1;
+                offsetX += 1;
+            }
+        }
+
+        ImPlot::EndPlot();
         ImGui::PopID();
         ImGui::End();
     }

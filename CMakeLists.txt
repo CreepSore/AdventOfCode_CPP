@@ -27,6 +27,17 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(ImGui)
 FetchContent_GetProperties(ImGui SOURCE_DIR IMGUI_DIR)
 
+FetchContent_Declare(
+    ImPlot
+    GIT_REPOSITORY https://github.com/epezent/implot
+    GIT_TAG v0.16
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM
+)
+FetchContent_MakeAvailable(ImPlot)
+FetchContent_GetProperties(ImPlot SOURCE_DIR IMPLOT_DIR)
+
 set(IMGUI_SFML_FIND_SFML OFF)
 FetchContent_Declare(
     ImGui-SFML
@@ -39,6 +50,9 @@ FetchContent_MakeAvailable(ImGui-SFML)
 
 add_executable(
     main
+    ${IMPLOT_DIR}/implot.cpp
+    ${IMPLOT_DIR}/implot_demo.cpp
+    ${IMPLOT_DIR}/implot_items.cpp
     AdventOfCode.Bootstrap/AdventOfCode.Bootstrap.cpp
 	AdventOfCode.Shared/AocRegistry.cpp
 	AdventOfCode.Shared/IAocDay.cpp
@@ -53,7 +67,14 @@ add_executable(
     AdventOfCode.2024/D05/Aoc2024D05.cpp
     AdventOfCode.2024/D06/Aoc2024D06.cpp
     AdventOfCode.2024/D07/Aoc2024D07.cpp
- "AdventOfCode.Bootstrap/MenuView.h")
+)
+
+target_include_directories(
+    main
+    PRIVATE
+    ${IMPLOT_DIR}
+    ${IMGUI_DIR}
+)
 
 target_link_libraries(
     main

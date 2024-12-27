@@ -10,6 +10,7 @@
 #include <imgui.h>
 #include <imgui-SFML.h>
 
+#include "implot.h"
 #include "../AdventOfCode.Shared/utils.h"
 
 BaseWindow::BaseWindow(
@@ -27,6 +28,7 @@ BaseWindow::BaseWindow(
         this->window = new sf::RenderWindow(sf::VideoMode(sf::Vector2u(1000, 1000)), title);
 
         ImGui::SFML::Init(*this->window);
+        ImPlot::CreateContext();
         ImGui::GetIO().ConfigDebugIsDebuggerPresent = isDebuggerPresent();
         ImGui::GetIO().IniFilename = nullptr;
 

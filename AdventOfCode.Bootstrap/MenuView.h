@@ -1,5 +1,9 @@
 #pragma once
+#include <implot.h>
 
+#include "LogViewer.h"
+#include "ResultViewer.h"
+#include "../AdventOfCode.Shared/VectorLogger.h"
 #include "../AdventOfCode.Shared/AocRegistry.h"
 #include "../AdventOfCode.Shared/IAocDay.h"
 
@@ -91,6 +95,7 @@ public:
             }
 
             ImGui::ShowDemoWindow(&this->demoOpen);
+            ImPlot::ShowDemoWindow(&this->demoOpen);
         }
 
         this->demoWasOpen = this->demoOpen;
@@ -116,7 +121,7 @@ public:
             }
         }
 
-        this->logViewer.open = this->logViewer.data->size() > 0;
+        this->logViewer.open = !this->logViewer.data->empty();
         resultViewer.setResults(&this->results);
         resultViewer.open = true;
     }
@@ -279,7 +284,16 @@ public:
                         ImGui::EndFrame();
 
                         this->results.clear();
-                        this->results[day->getId()] = registry->runDay(day, window);
+
+                        if (this->runVisual)
+                        {
+                            this->results[day->getId()] = this->registry->runDay(day, window);
+                        }
+                        else
+                        {
+                            this->results[day->getId()] = this->registry->runDay(day, nullptr);
+                        }
+
                         logViewer.open = this->vectorLogger->data.size() > 0;
                         resultViewer.setResults(&this->results);
                         resultViewer.open = true;

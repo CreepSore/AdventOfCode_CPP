@@ -1,9 +1,6 @@
 #include <iostream>
 #include <imgui.h>
 
-
-#include "LogViewer.h"
-#include "ResultViewer.h"
 #include "MenuView.h"
 #include "../AdventOfCode.2024/D01/Aoc2024D01.h"
 #include "../AdventOfCode.2024/D02/Aoc2024D02.h"
