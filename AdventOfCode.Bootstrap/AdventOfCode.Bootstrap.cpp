@@ -53,16 +53,16 @@ public:
     BaseWindow* baseWindow = nullptr;
     MenuView* menuView;
     MultiLogger multiLogger;
-    VectorLogger vectorLogger;
-    StdoutLogger stdoutLogger;
+    VectorLogger* vectorLogger = new VectorLogger();
+    StdoutLogger* stdoutLogger = new StdoutLogger();
 
     explicit AdventOfCode(StartParameters& startParameters):
         registry(startParameters.basedir)
     {
         this->startParameters = startParameters;
 
-        multiLogger.appendLogger(&stdoutLogger);
-        multiLogger.appendLogger(&vectorLogger);
+        multiLogger.appendLogger(stdoutLogger);
+        multiLogger.appendLogger(vectorLogger);
         registry.logger = &multiLogger;
     }
 
@@ -151,7 +151,7 @@ public:
             std::string title("AdventOfCode - C++");
 
             this->baseWindow = new BaseWindow(title);
-            this->menuView = new MenuView(&this->registry, &this->vectorLogger);
+            this->menuView = new MenuView(&this->registry, this->vectorLogger);
 
             while (this->baseWindow->window != nullptr)
             {
