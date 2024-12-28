@@ -1,5 +1,7 @@
 #include "Vec2.h"
 
+#include <string>
+
 Vec2::Vec2()
 {
     this->x = 0;
@@ -11,14 +13,14 @@ Vec2::Vec2(const Vec2& obj)
 {
     this->x = obj.x;
     this->y = obj.y;
-    this->hash = (this->x << 8) | this->y;
+    this->hash = (static_cast<uint16_t>(this->x) << 16) | this->y;
 }
 
-Vec2::Vec2(uint8_t x, uint8_t y)
+Vec2::Vec2(int16_t x, int16_t y)
 {
     this->x = x;
     this->y = y;
-    this->hash = (this->x << 8) | this->y;
+    this->hash = (static_cast<uint16_t>(this->x) << 16) | this->y;
 }
 
 void Vec2::add(const Vec2& obj)
@@ -29,7 +31,12 @@ void Vec2::add(const Vec2& obj)
 
 Vec2 Vec2::add(const Vec2& obj0, const Vec2& obj1)
 {
-    return {static_cast<uint8_t>(obj0.x + obj1.x), static_cast<uint8_t>(obj0.y + obj1.y)};
+    return {static_cast<int16_t>(obj0.x + obj1.x), static_cast<int16_t>(obj0.y + obj1.y)};
+}
+
+Vec2 Vec2::subtract(const Vec2& obj0, const Vec2& obj1)
+{
+    return { static_cast<int16_t>(obj0.x - obj1.x), static_cast<int16_t>(obj0.y - obj1.y) };
 }
 
 bool Vec2::equals(const Vec2& obj0, const Vec2& obj1)

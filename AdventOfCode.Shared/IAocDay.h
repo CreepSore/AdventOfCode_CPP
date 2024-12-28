@@ -6,7 +6,7 @@
 #include "AocDayPartResult.h"
 #include "../AdventOfCode.Visualization/BaseWindow.h"
 
-class IAocDay : IRenderable
+class IAocDay : public IRenderable
 {
 protected:
     std::string* data = nullptr;

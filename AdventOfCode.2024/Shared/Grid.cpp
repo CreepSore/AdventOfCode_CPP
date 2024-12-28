@@ -1,5 +1,10 @@
 #include "Grid.h"
 
+#include <format>
+
+#include "imgui.h"
+#include "imgui_internal.h"
+
 GridNode::GridNode(const Vec2& position, const uint8_t value)
 {
     this->position = Vec2(position);
@@ -18,13 +23,13 @@ void Grid::addNode(GridNode* node)
 {
     this->nodes[node->position.hash] = node;
 
-    this->height = std::max(this->height, static_cast<uint8_t>(node->position.y + 1));
-    this->width = std::max(this->width, static_cast<uint8_t>(node->position.x + 1));
+    this->height = std::max(this->height, static_cast<int16_t>(node->position.y + 1));
+    this->width = std::max(this->width, static_cast<int16_t>(node->position.x + 1));
 }
 
 GridNode* Grid::getNodeAt(const Vec2& offset) const
 {
-    if(offset.x < 0 || offset.y < 0 || offset.x >= this->width || offset.y >= this->height)
+    if(!this->isInBounds(offset))
     {
         return nullptr;
     }
@@ -40,6 +45,21 @@ GridNode* Grid::getNodeAt(const Vec2& offset) const
     }
 
     return this->nodes.at(offset.hash);
+}
+
+std::vector<GridNode*> Grid::getNodesWithValue(const uint8_t value) const
+{
+    std::vector<GridNode*> result;
+
+    for (auto node : this->nodes)
+    {
+        if(node.second->value == value)
+        {
+            result.push_back(node.second);
+        }
+    }
+
+    return result;
 }
 
 std::vector<GridNode*> Grid::getNeighbors(const GridNode& node) const
@@ -72,12 +92,12 @@ GridNode* Grid::getNeighbor(const GridNode& node, const Vec2& offset) const
     return this->getNodeAt(Vec2::add(node.position, offset));
 }
 
-uint8_t Grid::getWidth() const
+int16_t Grid::getWidth() const
 {
     return this->height;
 }
 
-uint8_t Grid::getHeight() const
+int16_t Grid::getHeight() const
 {
     return this->height;
 }
@@ -126,13 +146,66 @@ std::string Grid::toString() const
     return result;
 }
 
+void Grid::render() const
+{
+    auto dummy = std::map<uint8_t, ImVec4>();
+    this->render(dummy);
+}
+
+void Grid::render(std::map<uint8_t, ImVec4>& valueColorMapping) const
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
+    ImGui::BeginChild("View", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y));
+    if (ImGui::BeginTable("grid", this->getWidth(), ImGuiTableFlags_SizingFixedFit))
+    {
+        for (uint8_t y = 0; y < this->getHeight(); y++)
+        {
+            for (uint8_t x = 0; x < this->getWidth(); x++)
+            {
+                ImGui::TableNextColumn();
+                const auto node = this->getNodeAt(Vec2(x, y));
+
+                std::string text;
+                text.push_back(static_cast<const char>(node->value));
+
+                ImVec4 color = ImVec4(1, 1, 1, 1);
+
+                if(valueColorMapping.contains(node->value))
+                {
+                    color = valueColorMapping.at(node->value);
+                }
+
+                ImGui::TextColored(color, text.data());
+
+                if(ImGui::IsItemHovered())
+                {
+                    ImGui::BeginTooltip();
+                    ImGui::Text(std::format("@ {}X {}Y", node->position.x, node->position.y).data());
+                    ImGui::Text(std::format("@ {}W {}H", this->width, this->height).data());
+                    ImGui::EndTooltip();
+                }
+            }
+        }
+
+        ImGui::EndTable();
+    }
+
+    ImGui::EndChild();
+    ImGui::PopStyleVar();
+}
+
+bool Grid::isInBounds(const Vec2& pos) const
+{
+    return pos.x >= 0 && pos.y >= 0 && pos.x < this->width && pos.y < this->height;
+}
+
 Grid Grid::fromString(const std::string& data)
 {
     Grid grid;
-    uint8_t currX = 0;
-    uint8_t currY = 0;
+    int32_t currX = 0;
+    int32_t currY = 0;
 
-    for(int i = 0; i < data.length(); i++)
+    for(size_t i = 0; i < data.length(); i++)
     {
         const char c = data[i];
 

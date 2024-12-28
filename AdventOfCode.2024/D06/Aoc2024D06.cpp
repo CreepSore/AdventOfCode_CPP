@@ -174,7 +174,7 @@ AocDayPartResult Aoc2024D06::runPart1()
     Grid grid = Grid::fromString(*this->data);
     Vec2 startPosition;
 
-    for (std::pair<uint8_t, GridNode*> node : grid.nodes)
+    for (std::pair<uint64_t, GridNode*> node : grid.nodes)
     {
         if (node.second->value == '^')
         {
@@ -236,7 +236,7 @@ Aoc2024D06::TraverseResult Aoc2024D06::traverseGrid(
     Grid& grid, 
     const Vec2& startPosition, 
     const Vec2& startDirection,
-    std::set<uint32_t>* inVisited,
+    std::set<uint64_t>* inVisited,
     int depth
 )
 {
@@ -244,15 +244,15 @@ Aoc2024D06::TraverseResult Aoc2024D06::traverseGrid(
     result.blocks = std::vector<Vec2>();
     result.visited = 1;
 
-    static std::map<uint16_t, Vec2> rotation = {
+    static std::map<uint32_t, Vec2> rotation = {
         { Vec2::VEC_UP.hash, Vec2::VEC_RIGHT },
         { Vec2::VEC_RIGHT.hash, Vec2::VEC_DOWN },
         { Vec2::VEC_DOWN.hash, Vec2::VEC_LEFT },
         { Vec2::VEC_LEFT.hash, Vec2::VEC_UP }
     };
 
-    std::set<uint16_t> visitedPositions;
-    std::set<uint32_t>* visited = new std::set<uint32_t>();
+    std::set<uint32_t> visitedPositions;
+    std::set<uint64_t>* visited = new std::set<uint64_t>();
 
     GridNode* currentNode = grid.getNodeAt(startPosition);
     Vec2 currentDirection = startDirection;
@@ -291,9 +291,10 @@ Aoc2024D06::TraverseResult Aoc2024D06::traverseGrid(
             }
         }
 
-        const uint16_t currentPosHash = currentNode->position.hash;
-        const uint16_t currentDirHash = currentDirection.hash;
-        const uint32_t mergedHash = (currentPosHash << 16 | currentDirHash);
+        const uint32_t currentPosHash = currentNode->position.hash;
+        const uint32_t currentDirHash = currentDirection.hash;
+        uint64_t mergedHash = currentPosHash;
+        mergedHash = mergedHash << 32 | currentDirHash;
 
         if (visited->contains(mergedHash) || (inVisited != nullptr && inVisited->contains(mergedHash)))
         {

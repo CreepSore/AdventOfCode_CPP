@@ -9,6 +9,7 @@
 #include "../AdventOfCode.2024/D05/Aoc2024D05.h"
 #include "../AdventOfCode.2024/D06/Aoc2024D06.h"
 #include "../AdventOfCode.2024/D07/Aoc2024D07.h"
+#include "../AdventOfCode.2024/D08/Aoc2024D08.h"
 #include "../AdventOfCode.Shared/AocRegistry.h"
 #include "../AdventOfCode.Shared/MultiLogger.h"
 #include "../AdventOfCode.Shared/utils.h"
@@ -127,6 +128,7 @@ public:
             new Aoc2024D05(),
             new Aoc2024D06(),
             new Aoc2024D07(),
+            new Aoc2024D08(),
         };
 
         for (const auto aocDay : days)

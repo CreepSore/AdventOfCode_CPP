@@ -12,7 +12,7 @@ private:
     struct TraverseResult
     {
         bool looping;
-        int visited;
+        size_t visited;
         std::vector<Vec2> blocks;
     };
 
@@ -20,7 +20,7 @@ private:
     {
         Grid* inGrid;
         int inDepth;
-        std::set<uint16_t>* inVisitedPositions;
+        std::set<uint32_t>* inVisitedPositions;
 
         bool paused = true;
         bool skip = false;
@@ -28,7 +28,7 @@ private:
         int stepConfig = 1;
         bool changed = false;
 
-        RenderData(Grid* inGrid, int inDepth, std::set<uint16_t>* inVisitedPositions)
+        RenderData(Grid* inGrid, int inDepth, std::set<uint32_t>* inVisitedPositions)
         {
             this->inGrid = inGrid;
             this->inDepth = inDepth;
@@ -43,7 +43,7 @@ private:
         Grid& grid,
         const Vec2& startPosition,
         const Vec2& startDirection,
-        std::set<uint32_t>* inVisited,
+        std::set<uint64_t>* inVisited,
         int depth = 0
     );
 

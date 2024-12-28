@@ -1,17 +1,16 @@
 #pragma once
 #include <cstdint>
 #include <ostream>
-#include <string>
 
 struct Vec2
 {
-    uint16_t hash;
-    uint8_t x;
-    uint8_t y;
+    uint32_t hash;
+    int16_t x;
+    int16_t y;
 
     Vec2();
     Vec2(const Vec2& obj);
-    Vec2(uint8_t x, uint8_t y);
+    Vec2(int16_t x, int16_t y);
 
     uint16_t getHash() const {
         return this->hash;
@@ -24,6 +23,7 @@ struct Vec2
     /// </summary>
     /// <returns></returns>
     static Vec2 add(const Vec2& obj0, const Vec2& obj1);
+    static Vec2 subtract(const Vec2& obj0, const Vec2& obj1);
     static bool equals(const Vec2& obj0, const Vec2& obj1);
 
     static Vec2 VEC_UP;

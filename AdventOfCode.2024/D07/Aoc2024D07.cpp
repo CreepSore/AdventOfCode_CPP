@@ -32,7 +32,7 @@ AocDayPartResult Aoc2024D07::runPart1() const
 
         if (c == ' ' || c == '\r')
         {
-            if(buffer.length() > 0)
+            if(!buffer.empty())
             {
                 currentNumbers.emplace_back(std::stoll(buffer));
                 buffer.clear();
@@ -49,10 +49,10 @@ AocDayPartResult Aoc2024D07::runPart1() const
             for(int possibility = 0; possibility < until; possibility++)
             {
                 int64_t calcResult = 0;
-                int64_t previousNum = currentNumbers[1];
 
                 for(int j = 2; j < lineSize; j++)
                 {
+                    int64_t previousNum = currentNumbers[j - 1];
                     const int64_t curr = currentNumbers[j];
                     const int operation = possibility >> (j - 2) & 0x1;
                     int64_t currentCalcResult;
@@ -73,7 +73,6 @@ AocDayPartResult Aoc2024D07::runPart1() const
                     }
 
                     calcResult = currentCalcResult;
-                    previousNum = currentCalcResult;
                 }
 
                 if(calcResult == expected)
@@ -95,7 +94,7 @@ AocDayPartResult Aoc2024D07::runPart1() const
 
 AocDayPartResult Aoc2024D07::runPart2() const
 {
-    int result = 0;
+    int64_t result = 0;
 
     return { result };
 }
