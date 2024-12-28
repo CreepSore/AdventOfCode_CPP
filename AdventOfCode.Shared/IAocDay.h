@@ -17,16 +17,35 @@ protected:
     bool isVisual = false;
 
 public:
-    uint32_t getId() const;
-    uint8_t getDay() const;
-    uint16_t getYear() const;
-    uint8_t getPartCount() const;
-    bool getIsVisual() const;
+    uint32_t getId() const
+    {
+        return (static_cast<uint32_t>(this->year) << 8) | this->day;
+    }
+
+    uint8_t getDay() const
+    {
+        return this->day;
+    }
+
+    uint16_t getYear() const
+    {
+        return this->year;
+    }
+
+    uint8_t getPartCount() const
+    {
+        return this->parts;
+    }
+
+    bool getIsVisual() const
+    {
+        return this->isVisual;
+    }
 
     void initialize(const std::string& data);
     void initialize(const std::string& data, BaseWindow* window);
     void deinit();
-    void handleVisual();
+    void handleVisual() const;
     void render(BaseWindow* window) override;
     void renderData(bool* p_open = 0, ImGuiWindowFlags flags = 0) const;
 
