@@ -20,6 +20,7 @@ AocDayPartResult Aoc2024D04::runPart1() const
 {
     const std::string toFind = "XMAS";
     Grid grid = Grid::fromString(*this->data);
+    grid.fillNodesPos();
     const auto height = grid.getHeight();
     const auto width = grid.getWidth();
 

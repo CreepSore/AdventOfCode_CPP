@@ -22,7 +22,7 @@ void Grid::addNode(GridNode* node)
     this->width = std::max(this->width, static_cast<uint8_t>(node->position.x + 1));
 }
 
-GridNode* Grid::getNodeAt(const Vec2& offset)
+GridNode* Grid::getNodeAt(const Vec2& offset) const
 {
     if(offset.x < 0 || offset.y < 0 || offset.x >= this->width || offset.y >= this->height)
     {
@@ -42,7 +42,7 @@ GridNode* Grid::getNodeAt(const Vec2& offset)
     return this->nodes.at(offset.hash);
 }
 
-std::vector<GridNode*> Grid::getNeighbors(const GridNode& node)
+std::vector<GridNode*> Grid::getNeighbors(const GridNode& node) const
 {
     std::vector<GridNode*> result;
 
@@ -67,7 +67,7 @@ std::vector<GridNode*> Grid::getNeighbors(const GridNode& node)
     return result;
 }
 
-GridNode* Grid::getNeighbor(const GridNode& node, const Vec2& offset)
+GridNode* Grid::getNeighbor(const GridNode& node, const Vec2& offset) const
 {
     return this->getNodeAt(Vec2::add(node.position, offset));
 }
@@ -102,7 +102,7 @@ void Grid::fillNodesPos()
     nodesPosInitialized = true;
 }
 
-std::string Grid::toString()
+std::string Grid::toString() const
 {
     std::string result;
 

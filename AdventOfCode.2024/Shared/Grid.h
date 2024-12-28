@@ -27,15 +27,15 @@ public:
     ~Grid();
 
     void addNode(GridNode* node);
-    GridNode* getNodeAt(const Vec2& offset);
-    std::vector<GridNode*> getNeighbors(const GridNode& node);
-    GridNode* getNeighbor(const GridNode& node, const Vec2& offset);
+    GridNode* getNodeAt(const Vec2& offset) const;
+    std::vector<GridNode*> getNeighbors(const GridNode& node) const;
+    GridNode* getNeighbor(const GridNode& node, const Vec2& offset) const;
 
     uint8_t getWidth() const;
     uint8_t getHeight() const;
 
     void fillNodesPos();
-    std::string toString();
+    std::string toString() const;
 
     static Grid fromString(const std::string& data);
 };
