@@ -39,7 +39,7 @@ public:
         ImGui::EndChild();
     }
 
-    void renderDay(float availableX, std::vector<uint64_t>& plotting, std::map<uint32_t, std::vector<AocDayPartResult>>::value_type day) {
+    void renderDay(float availableX, std::vector<ImU64>& plotting, std::map<uint32_t, std::vector<AocDayPartResult>>::value_type day) {
         std::string label = std::format("{} {}", day.first >> 8, day.first & 0xFF);
 
         ImGui::BeginChild(label.data(), ImVec2(availableX, 125), ImGuiChildFlags_Border);
@@ -104,7 +104,7 @@ public:
         int columns = 2;
         int currentColumn = 0;
         float availableX = ImGui::GetContentRegionAvail().x / columns;
-        std::vector<uint64_t> plotting;
+        std::vector<ImU64> plotting;
 
         for (auto day : *this->results)
         {

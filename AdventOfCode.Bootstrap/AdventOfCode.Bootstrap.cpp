@@ -52,7 +52,7 @@ private:
 public:
     AocRegistry registry;
     BaseWindow* baseWindow = nullptr;
-    MenuView* menuView;
+    MenuView* menuView = nullptr;
     MultiLogger multiLogger;
     VectorLogger* vectorLogger = new VectorLogger();
     StdoutLogger* stdoutLogger = new StdoutLogger();

@@ -98,63 +98,12 @@ void Aoc2024D06::render(BaseWindow* window)
         ImGui::EndChild();
     }
 
-    {
-        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
-        ImGui::BeginChild("View", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y));
-        if (ImGui::BeginTable("grid", this->renderArgs->inGrid->getWidth(), ImGuiTableFlags_SizingFixedFit))
-        {
-            for (int y = 0; y < this->renderArgs->inGrid->getHeight(); y++)
-            {
-                for (int x = 0; x < this->renderArgs->inGrid->getWidth(); x++)
-                {
-                    auto node = this->renderArgs->inGrid->getNodeAt(Vec2(x, y));
-
-                    std::string text;
-                    text.push_back(node->value);
-
-                    ImVec4 color;
-                    bool doScroll = false;
-                    switch (node->value)
-                    {
-                    case '#':
-                        color = ImVec4(1, 0, 0, 1);
-                        break;
-
-                    case '.':
-                        color = ImVec4(0.6, 0.6, 0.6, 1);
-
-                        if (this->renderArgs->inVisitedPositions->contains(node->position.hash))
-                        {
-                            color = ImVec4(0, 1, 0, 1);
-                        }
-
-                        break;
-
-                    case 'X':
-                        color = ImVec4(0, 1, 0, 1);
-                        doScroll = true;
-                        break;
-
-                    default:
-                        color = ImVec4(1, 1, 1, 1);
-                    }
-
-                    ImGui::TextColored(color, text.data());
-
-                    if (doScroll)
-                    {
-                        ImGui::ScrollToBringRectIntoView(ImGui::GetCurrentWindow(), ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax()));
-                    }
-                    ImGui::TableNextColumn();
-                }
-            }
-
-            ImGui::EndTable();
-        }
-
-        ImGui::EndChild();
-        ImGui::PopStyleVar();
-    }
+    auto colorMapping = std::map<uint8_t, ImVec4>{
+            { '#', ImVec4(1, 0, 0, 1) },
+            {'.', ImVec4(0.6, 0.6, 0.6, 1) },
+            {'X', ImVec4(0, 1, 0, 1) }
+    };
+    this->renderArgs->inGrid->render(colorMapping);
 
     ImGui::End();
     ImGui::PopID();

@@ -7,7 +7,7 @@ option(BUILD_SHARED_LIBS OFF)
 include(FetchContent)
 
 FetchContent_Declare(
-	SFML
+    SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
     GIT_TAG 3.0.0
     GIT_SHALLOW ON
@@ -54,8 +54,8 @@ add_executable(
     ${IMPLOT_DIR}/implot.cpp
     ${IMPLOT_DIR}/implot_demo.cpp
     ${IMPLOT_DIR}/implot_items.cpp
-	AdventOfCode.Shared/AocRegistry.cpp
-	AdventOfCode.Shared/IAocDay.cpp
+    AdventOfCode.Shared/AocRegistry.cpp
+    AdventOfCode.Shared/IAocDay.cpp
     AdventOfCode.Visualization/BaseWindow.cpp
     AdventOfCode.2024/Shared/Grid.cpp
     AdventOfCode.2024/Shared/Vec2.cpp
@@ -67,7 +67,8 @@ add_executable(
     AdventOfCode.2024/D05/Aoc2024D05.cpp
     AdventOfCode.2024/D06/Aoc2024D06.cpp
     AdventOfCode.2024/D07/Aoc2024D07.cpp
- "AdventOfCode.2024/D08/Aoc2024D08.cpp")
+    AdventOfCode.2024/D08/Aoc2024D08.cpp
+)
 
 target_include_directories(
     main
